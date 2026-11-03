@@ -3,11 +3,13 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Portafolio | Lucas</title>
+    <meta name="theme-color" content="#090b12" />
+    <meta name="description" content="Portafolio de Lucas Pajarito, desarrollador web junior. Proyectos, habilidades y contacto." />
+    <title>Lucas Pajarito — Desarrollador web</title>
     <link rel="stylesheet" href="./src/style.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
 </head>
 <body>
@@ -15,9 +17,17 @@
     <!-- ===== HEADER ===== -->
     <header class="header">
         <div class="container nav">
-            <h1 class="logo">LP-Guatemala</h1>
+            <a class="logo" href="#inicio" aria-label="Lucas Pajarito, inicio">
+                <span class="logo-mark">LP</span>
+                <span>lucas<span class="logo-dot">.</span></span>
+            </a>
 
-            <nav>
+            <button class="menu-toggle" type="button" aria-label="Abrir menú" aria-expanded="false" aria-controls="primary-navigation">
+                <span></span>
+                <span></span>
+            </button>
+
+            <nav class="navigation" id="primary-navigation" aria-label="Navegación principal">
                 <ul class="nav-links">
                     <li><a href="#inicio">Inicio</a></li>
                     <li><a href="#sobre-mi">Sobre mí</a></li>
@@ -29,21 +39,21 @@
         </div>
     </header>
 
+    <main>
     <!-- ===== HERO ===== -->
     <section id="inicio" class="hero">
         <div class="container hero-content">
 
             <div class="hero-text">
-                <span class="tag">Desarrollador Web</span>
+                <span class="eyebrow"><span class="status-dot"></span> Disponible para nuevos retos</span>
 
-                <h2>Hola, soy <span>Lucas</span></h2>
+                <h2>Ideas claras.<br /><span>Experiencias</span><br />que conectan.</h2>
 
-                <h3>Desarrollador Web Full Stack Junior</h3>
+                <h3>Hola, soy Lucas Pajarito. <span>Desarrollador web junior</span></h3>
 
                 <p>
-                    Apasionado por creacion de soluciones web funcionales, intuitivas
-                    y con gran experiencia de usuario. Siempre aprendiendo
-                    y construyendo cosas nuevas.
+                    Transformo ideas en experiencias web funcionales, intuitivas y accesibles.
+                    Me gusta aprender, resolver problemas y construir cosas que aporten valor.
                 </p>
 
                 <div class="hero-buttons">
@@ -51,24 +61,28 @@
                     <a href="#contacto" class="btn secondary">Contactarme</a>
                 </div>
 
-                <div class="socials">
-                    <a href="https://github.com/lucaspajarito01">GitHub</a>
-                    <a href="https://www.linkedin.com/in/lucas-samuel-pajarito-surek-9072933b9/">LinkedIn</a>
-                    <a href="https://www.instagram.com/samysurek/">Instagram</a>
+                <div class="socials" aria-label="Redes sociales">
+                    <a href="https://github.com/lucaspajarito01" target="_blank" rel="noreferrer">GitHub <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></a>
+                    <a href="https://www.linkedin.com/in/lucas-samuel-pajarito-surek-9072933b9/" target="_blank" rel="noreferrer">LinkedIn <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></a>
+                    <a href="https://www.instagram.com/samysurek/" target="_blank" rel="noreferrer">Instagram <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></a>
                 </div>
             </div>
 
-            <div class="hero-code">
-<pre><code>&lt;!DOCTYPE html&gt;
-&lt;html lang="es"&gt;
-&lt;head&gt;
-  &lt;title&gt;Campuslands Guatemala&lt;/title&gt;
-&lt;/head&gt;
-&lt;body&gt;
-  &lt;h1&gt;Desarrollador Full Stack Junior&lt;/h1&gt;
-&lt;/body&gt;
-&lt;/html&gt;
+            <div class="hero-visual" aria-label="Presentación visual de Lucas">
+                <div class="visual-orbit orbit-one"></div>
+                <div class="visual-orbit orbit-two"></div>
+                <div class="visual-core"><span>LP</span></div>
+                <span class="visual-chip chip-top"><i class="fa-solid fa-code" aria-hidden="true"></i> Código con intención</span>
+                <span class="visual-chip chip-bottom"><i class="fa-solid fa-wand-magic-sparkles" aria-hidden="true"></i> Diseño + desarrollo</span>
+                <div class="hero-code">
+                    <div class="code-heading"><span></span><span></span><span></span><small>lucas.js</small></div>
+<pre><code>const lucas = {
+  enfoque: "crear",
+  curiosidad: "siempre",
+  siguienteReto: true
+};
 </code></pre>
+                </div>
             </div>
 
         </div>
@@ -86,38 +100,29 @@
                     <div class="avatar">
                     <img src="./img/lucaspajarito.png" alt="Foto de perfil de Lucas" class="profile-img"></div>
 
-                    <p>
-                        Soy un desarrollador web con enfoque en crear aplicaciones
-                        modernas y eficientes capaces de generar una experiencia amigable con el usuario. Me especializo en HTML, CSS,
-                        JavaScript, N8N, Node.js y bases de datos.
-                    </p>
+                    <p>Soy desarrollador web y me enfoco en crear aplicaciones modernas, eficientes y agradables de usar. Trabajo con HTML, CSS, JavaScript, n8n, Node.js y bases de datos.</p>
 
                     <a href="#contacto" class="btn secondary small">Más sobre mí</a>
                 </div>
 
                 <div class="about-card">
-                    <h3>🚀 Enfoque</h3>
-                    <br>
-                    <p>- Soluciones creativas y eficientes para generar una experiencia agradable al usuario.</p>
-                    <br>
-                    <p>- Diseños de interfaz amigable reduciendo conflictos que se presenten durante la ineracción del usuario con la app</p>
+                    <h3><span class="card-icon"><i class="fa-solid fa-compass" aria-hidden="true"></i></span> Enfoque</h3>
+                    <p>Soluciones creativas y eficientes que ponen a las personas en el centro.</p>
+                    <p>Interfaces claras que hacen que cada interacción sea más sencilla.</p>
                 </div>
 
-                <div class="about-card">
-                    <h3>💻 Experiencia</h3>
-                    <br>
-                    <p>- Desarrollo de aplicaciones web modernas.</p>
-                    <p>- interfaz atractiva con HTML, CSS y JavaScript.</p>
-                    <p>- Integración básica con base de datos MySQL.</p>
-                    <p>- Optimización para dispositivos móviles.</p>
-                    <p>- Creación de pagina web accesibles.</p>
+                <div class="about-card aprendizaje">
+                    <h3><span class="card-icon"><i class="fa-solid fa-laptop-code" aria-hidden="true"></i></span> Experiencia</h3>
+                    <p>Desarrollo de aplicaciones web modernas con HTML, CSS y JavaScript.</p>
+                    <p>Integración básica con MySQL y diseño adaptable para móviles.</p>
+                    <p>Creación de páginas accesibles y fáciles de usar.</p>
                 </div>
 
       <div class="about-card">
-         <h3>🎓 Aprendizaje</h3>
+         <h3><span class="card-icon"><i class="fa-solid fa-graduation-cap" aria-hidden="true"></i></span> Aprendizaje</h3>
                 <div class="item">  
                     <div>
-                      <h3> <i class="fa-solid fa-code"></i> HTML, CSS y JavaScript</h3>
+                      <h3><i class="fa-solid fa-code"></i> HTML, CSS y JavaScript</h3>
                       <p>Maquetación moderna y responsive.</p>
                     </div>
                   </div>
@@ -146,7 +151,7 @@
                 </div>
 
                 <div class="about-card">
-                    <h3>🎯 Objetivo</h3>
+                    <h3><span class="card-icon"><i class="fa-solid fa-bullseye" aria-hidden="true"></i></span> Objetivo</h3>
                     <p>
                         Crear impacto a través del código, desarrollando aplicaciones web
                         modernas, accesibles y útiles que aporten soluciones reales a las
@@ -161,29 +166,33 @@
     <section id="proyectos" class="projects section">
         <div class="container">
 
-            <h2 class="section-title">Proyectos Destacados</h2>
+            <div class="section-heading">
+                <span class="section-kicker">Del concepto al producto</span>
+                <h2 class="section-title">Proyectos destacados</h2>
+                <p>Algunas ideas convertidas en soluciones reales.</p>
+            </div>
 
             <div class="projects-grid">
 
                 <article class="project-card">
-                    <div class="project-image"><img src="./img/campusparking.png" alt=""></div>
-                    <h3>Sistema de Parqueo</h3>
+                    <div class="project-image"><img src="./img/campusparking.png" alt="Vista del sistema de gestión CampusParking" loading="lazy"></div>
+                    <div class="project-body"><span class="project-type">Gestión · Web</span><h3>Sistema de parqueo</h3>
                     <p>Aplicación para gestión de parqueos con reportes y control de espacios.</p>
-                    <a href="https://github.com/lucaspajarito01/Proyecto--JavaScript.-CampusParking-Lucas-Pajarito-.git0"  class="project-link">Ver proyecto →</a>
+                    <a href="https://github.com/lucaspajarito01/Proyecto--JavaScript.-CampusParking-Lucas-Pajarito-.git0" target="_blank" rel="noreferrer" class="project-link">Explorar proyecto <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></a></div>
                 </article>
 
                 <article class="project-card">
-                    <div class="project-image"><img src="./img/tutorbot.png" alt=""></div>
-                    <h3>Tutor_Bot</h3>
-                    <p>Bot que organiza la gestión de asignaciones de tutorias de manera automatica.</p>
-                    <a href="https://github.com/lucaspajarito01/Proyecto_TutorBot_Garcia_Lester_-_Pajarito_Lucas.git" class="project-link">Ver proyecto →</a>
+                    <div class="project-image"><img src="./img/tutorbot.png" alt="Vista del bot de gestión de tutorías" loading="lazy"></div>
+                    <div class="project-body"><span class="project-type">Automatización · Bot</span><h3>Tutor_Bot</h3>
+                    <p>Bot que organiza la gestión de asignaciones de tutorías de manera automática.</p>
+                    <a href="https://github.com/lucaspajarito01/Proyecto_TutorBot_Garcia_Lester_-_Pajarito_Lucas.git" target="_blank" rel="noreferrer" class="project-link">Explorar proyecto <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></a></div>
                 </article>
 
                 <article class="project-card">
-                    <div class="project-image"><img src="./img/inventario.png" alt=""></div>
-                    <h3>Proyecto control de intentario de tienda.   </h3>
+                    <div class="project-image"><img src="./img/inventario.png" alt="Vista del sistema de inventario para tienda" loading="lazy"></div>
+                    <div class="project-body"><span class="project-type">Inventario · Software</span><h3>Control de inventario</h3>
                     <p>Programa elaborado para la gestión de inventario de una tienda.</p>
-                    <a href="https://github.com/lucaspajarito01/inventario_tienda.git" class="project-link">Ver proyecto →</a>
+                    <a href="https://github.com/lucaspajarito01/inventario_tienda.git" target="_blank" rel="noreferrer" class="project-link">Explorar proyecto <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></a></div>
                 </article>
 
             </div>
@@ -194,17 +203,21 @@
     <section id="habilidades" class="skills section">
         <div class="container">
 
-            <h2 class="section-title">Habilidades</h2>
+            <div class="section-heading">
+                <span class="section-kicker">Herramientas de trabajo</span>
+                <h2 class="section-title">Habilidades</h2>
+                <p>Tecnologías que uso y sigo explorando.</p>
+            </div>
 
             <div class="skills-grid">
-                <span>HTML</span>
-                <span>CSS</span>
-                <span>JavaScript</span>
-                <span>n8n</span>
-                <span>Node.js</span>
-                <span>MySQL</span>
-                <span>Git</span>
-                <span>GitHub</span>
+                <span><i class="fa-brands fa-html5" aria-hidden="true"></i> HTML</span>
+                <span><i class="fa-brands fa-css3-alt" aria-hidden="true"></i> CSS</span>
+                <span><i class="fa-brands fa-js" aria-hidden="true"></i> JavaScript</span>
+                <span><i class="fa-solid fa-diagram-project" aria-hidden="true"></i> n8n</span>
+                <span><i class="fa-brands fa-node-js" aria-hidden="true"></i> Node.js</span>
+                <span><i class="fa-solid fa-database" aria-hidden="true"></i> MySQL</span>
+                <span><i class="fa-brands fa-git-alt" aria-hidden="true"></i> Git</span>
+                <span><i class="fa-brands fa-github" aria-hidden="true"></i> GitHub</span>
             </div>
 
         </div>
@@ -214,7 +227,8 @@
     <section id="contacto" class="contact section">
         <div class="container contact-box">
 
-            <h2>¿Trabajamos juntos?</h2>
+            <span class="section-kicker">El siguiente paso empieza aquí</span>
+            <h2>¿Creamos algo juntos?</h2>
 
             <p>
                 Estoy disponible para proyectos freelance, prácticas profesionales
@@ -222,16 +236,19 @@
             </p>
 
             <a href="mailto:lucaspajarito2023@gmail.com" class="btn primary">
-                Enviar correo
+                Hablemos <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
             </a>
 
         </div>
     </section>
 
+    </main>
+
     <!-- ===== FOOTER ===== -->
     <footer class="footer">
-        <p>© 2026 Lucas Pajarito. Todos los derechos reservados.</p>
+        <p>© <span id="current-year">2026</span> Lucas Pajarito <span class="footer-separator">·</span> Hecho con curiosidad y café.</p>
     </footer>
 
+    <script src="./src/main.js" defer></script>
 </body>
 </html>
