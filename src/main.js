@@ -1,74 +1,37 @@
-const menuToggle = document.querySelector('.menu-toggle');
-const navigation = document.querySelector('.navigation');
-const navigationLinks = document.querySelectorAll('.nav-links a');
-const currentYear = document.querySelector('#current-year');
+/**
+ * Punto de Entrada Principal del Portafolio de Lucas Samuel Pajarito Surek
+ * Orquesta la inicialización ordenada de todos los módulos funcionales.
+ */
+(function () {
+    document.documentElement.classList.add('js-enabled');
 
-document.documentElement.classList.add('js-enabled');
+    function bootstrapPortfolio() {
+        const app = window.PortfolioApp || {};
 
-if (currentYear) {
-    currentYear.textContent = String(new Date().getFullYear());
-}
-
-if (menuToggle && navigation) {
-    const closeMenu = () => {
-        menuToggle.setAttribute('aria-expanded', 'false');
-        menuToggle.setAttribute('aria-label', 'Abrir menú');
-        navigation.classList.remove('is-open');
-    };
-
-    menuToggle.addEventListener('click', () => {
-        const isOpen = menuToggle.getAttribute('aria-expanded') === 'true';
-        menuToggle.setAttribute('aria-expanded', String(!isOpen));
-        menuToggle.setAttribute('aria-label', isOpen ? 'Abrir menú' : 'Cerrar menú');
-        navigation.classList.toggle('is-open', !isOpen);
-    });
-
-    navigationLinks.forEach((link) => link.addEventListener('click', closeMenu));
-    document.addEventListener('keydown', (event) => {
-        if (event.key === 'Escape') {
-            closeMenu();
-            menuToggle.focus();
+        if (typeof app.initThemeModule === 'function') {
+            app.initThemeModule();
         }
-    });
-}
 
-const revealItems = document.querySelectorAll(
-    '.section-heading, .about-card, .project-card, .skills-grid span, .contact-box'
-);
+        if (typeof app.initNavigationModule === 'function') {
+            app.initNavigationModule();
+        }
 
-if ('IntersectionObserver' in window) {
-    const revealObserver = new IntersectionObserver((entries, observer) => {
-        entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('is-visible');
-                observer.unobserve(entry.target);
-            }
-        });
-    }, { threshold: 0.12 });
+        if (typeof app.initAnimationsModule === 'function') {
+            app.initAnimationsModule();
+        }
 
-    revealItems.forEach((item, index) => {
-        item.classList.add('reveal');
-        item.style.transitionDelay = `${(index % 4) * 70}ms`;
-        revealObserver.observe(item);
-    });
+        if (typeof app.initFiltersModule === 'function') {
+            app.initFiltersModule();
+        }
 
-    const sectionObserver = new IntersectionObserver((entries) => {
-        entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-                navigationLinks.forEach((link) => {
-                    if (link.getAttribute('href') === `#${entry.target.id}`) {
-                        link.setAttribute('aria-current', 'location');
-                    } else {
-                        link.removeAttribute('aria-current');
-                    }
-                });
-            }
-        });
-    }, { rootMargin: '-25% 0px -65% 0px' });
+        if (typeof app.initContactModule === 'function') {
+            app.initContactModule();
+        }
+    }
 
-    document.querySelectorAll('main section[id]').forEach((section) => {
-        sectionObserver.observe(section);
-    });
-} else {
-    revealItems.forEach((item) => item.classList.add('is-visible'));
-}
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', bootstrapPortfolio);
+    } else {
+        bootstrapPortfolio();
+    }
+})();
