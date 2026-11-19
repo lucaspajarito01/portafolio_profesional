@@ -3,1372 +3,271 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#080a11" id="theme-color-meta" />
-    <meta name="description" content="Portafolio profesional de Lucas Samuel Pajarito Surek, Técnico en Desarrollo de Software. Especialista en desarrollo web, backend con Node.js, bases de datos SQL, integración de IA y soluciones escalables." />
-    <title>Lucas Samuel Pajarito Surek — Técnico en Desarrollo de Software</title>
-    <link rel="stylesheet" href="./src/style.css" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+    <meta name="theme-color" content="#070B14" />
+    <title>Lucas Pajarito Surek — Desarrollador Web · Experiencias Interactivas</title>
+    <meta name="description" content="Portafolio inmersivo 3D de Lucas Samuel Pajarito Surek. Desarrollador Web especializado en experiencias interactivas, arquitectura backend, Three.js, WebGL y sistemas escalables." />
+    <meta name="author" content="Lucas Samuel Pajarito Surek" />
+
+    <!-- Open Graph / Social -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Lucas Pajarito Surek — Desarrollador Web · Experiencias Interactivas" />
+    <meta property="og:description" content="Experiencia web interactiva 3D donde el scroll es la cámara. Proyectos, arquitectura de software y desarrollo creativo." />
+    <meta property="og:locale" content="es_GT" />
+
+    <!-- Favicon SVG minimalista en paleta azul glaciar -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23070B14'/%3E%3Cpolygon points='32,8 54,24 46,52 18,52 10,24' fill='none' stroke='%235B8DB8' stroke-width='3'/%3E%3Ctext x='32' y='38' text-anchor='middle' fill='%23DCE6EE' font-family='monospace' font-size='16' font-weight='bold'%3ELP%3C/text%3E%3C/svg%3E" />
+
+    <!-- Tipografías: Editorial Serif Condensada (Cormorant Garamond / Syne) + Mono Fina (DM Mono) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,600&family=DM+Mono:wght@300;400;500&family=Syne:wght@600;700;800&display=swap" rel="stylesheet" />
+
+    <link rel="stylesheet" href="./css/style.css" />
+
+    <!-- Import Map para ES Modules nativos sin bundlers pesados -->
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js",
+                "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.164.1/examples/jsm/",
+                "gsap": "https://cdn.jsdelivr.net/npm/gsap@3.12.5/index.js",
+                "gsap/ScrollTrigger": "https://cdn.jsdelivr.net/npm/gsap@3.12.5/ScrollTrigger.js",
+                "lenis": "https://cdn.jsdelivr.net/npm/lenis@1.1.13/+esm",
+                "split-type": "https://cdn.jsdelivr.net/npm/split-type@0.3.4/+esm"
+            }
+        }
+    </script>
 </head>
 <body>
 
-    <!-- Barra de progreso de lectura -->
-    <div class="scroll-progress" id="scroll-progress" aria-hidden="true"></div>
-
-    <!-- Elementos decorativos de fondo con movimiento -->
-    <div class="ambient-bg" aria-hidden="true">
-        <div class="ambient-orb orb-1"></div>
-        <div class="ambient-orb orb-2"></div>
-        <div class="ambient-orb orb-3"></div>
-        <div class="ambient-grid"></div>
+    <!-- ===== 1. LOADER TERMINAL MINIMALISTA ===== -->
+    <div class="terminal-loader" id="terminal-loader" role="status" aria-live="polite">
+        <div class="loader-inner">
+            <div class="loader-header">
+                <span class="loader-dot"></span>
+                <span class="loader-sys">SYS // LUCAS_PAJARITO_PORTFOLIO_2026</span>
+            </div>
+            <p class="loader-counter" id="loader-percent">compilando experiencia… 0%</p>
+            <div class="loader-bar-track" aria-hidden="true">
+                <div class="loader-bar-fill" id="loader-bar-fill"></div>
+            </div>
+            <p class="loader-status" id="loader-status-msg">inicializando motor WebGL…</p>
+        </div>
     </div>
 
-    <!-- ===== HEADER ===== -->
-    <header class="header">
-        <div class="container nav">
-            <a class="logo" href="#inicio" aria-label="Lucas Samuel Pajarito Surek, ir al inicio">
-                <span class="logo-mark">LP</span>
-                <span class="logo-text">lucas<span class="logo-dot">.</span>dev</span>
-            </a>
+    <!-- ===== CURSOR PERSONALIZADO CON INERCIA ===== -->
+    <div class="cursor-dot" id="cursor-dot" aria-hidden="true"></div>
+    <div class="cursor-ring" id="cursor-ring" aria-hidden="true"></div>
 
-            <nav class="navigation" id="primary-navigation" aria-label="Navegación principal">
-                <ul class="nav-links">
-                    <li><a href="#inicio">Inicio</a></li>
-                    <li><a href="#papeleria">Papelería &amp; Redes</a></li>
-                    <li><a href="#sobre-mi">Sobre mí</a></li>
-                    <li><a href="#habilidades">Skills</a></li>
-                    <li><a href="#proyectos">Proyectos</a></li>
-                    <li><a href="#contacto">Contacto</a></li>
-                </ul>
-            </nav>
+    <!-- ===== LIENZO 3D ÚNICO (THREE.JS WEBGL) ===== -->
+    <div class="webgl-viewport" aria-hidden="true">
+        <canvas id="webgl-canvas"></canvas>
+    </div>
 
-            <div class="nav-actions">
-                <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Cambiar a modo claro" title="Cambiar entre modo oscuro y modo claro">
-                    <span class="theme-icon-wrapper">
-                        <i class="fa-solid fa-sun icon-sun" aria-hidden="true"></i>
-                        <i class="fa-solid fa-moon icon-moon" aria-hidden="true"></i>
-                    </span>
-                    <span class="theme-label" id="theme-label">Modo Oscuro</span>
-                </button>
+    <!-- ===== NAVEGACIÓN MÍNIMA FIJA Y CONTROLES HUD ===== -->
+    <header class="hud-header">
+        <a href="#scene-hero" class="hud-brand" aria-label="Lucas Pajarito Surek, ir al inicio" data-cursor="link">
+            <span class="brand-glyph">◆</span>
+            <span class="brand-text">LUCAS.PAJARITO</span>
+        </a>
 
-                <button class="menu-toggle" type="button" aria-label="Abrir menú" aria-expanded="false" aria-controls="primary-navigation">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </button>
-            </div>
+        <nav class="top-nav" aria-label="Navegación de escenas">
+            <ul class="top-nav-links">
+                <li><a href="#scene-hero" class="is-active" data-cursor="link">01.Hero</a></li>
+                <li><a href="#scene-skills" data-cursor="link">02.Skills</a></li>
+                <li><a href="#scene-fog" data-cursor="link">03.Visión</a></li>
+                <li><a href="#scene-projects" data-cursor="link">04.Proyectos</a></li>
+                <li><a href="#scene-process" data-cursor="link">05.Proceso</a></li>
+                <li><a href="#scene-contact" data-cursor="link">06.Contacto</a></li>
+            </ul>
+        </nav>
+
+        <div class="hud-controls">
+            <button type="button" class="hud-btn" id="pause-motion-btn" aria-pressed="false" data-cursor="link">
+                <span class="hud-btn-indicator"></span>
+                <span id="pause-motion-label">Pausar movimiento</span>
+            </button>
+
+            <button type="button" class="hud-btn" id="theme-mode-btn" aria-label="Alternar paleta de luz fría" data-cursor="link">
+                <span id="theme-mode-label">Modo Noche</span>
+            </button>
+
+            <button type="button" class="hud-btn hud-dev-btn" id="open-dev-console-btn" title="Escribe 'dev' o presiona ` para abrir la consola técnica" aria-label="Abrir consola de arquitectura" data-cursor="link">
+                <span>[DEV]</span>
+            </button>
         </div>
     </header>
 
-    <main>
-        <!-- =====================================================================
-             1. PRESENTACIÓN: NOMBRE COMPLETO Y DESCRIPCIÓN A LA PAR
-             ===================================================================== -->
-        <section id="inicio" class="hero section-hero">
-            <div class="container">
-                <div class="hero-split">
+    <!-- ===== BARRA DE PROGRESO LATERAL E INDICADOR DE CÁMARA ===== -->
+    <aside class="hud-lateral" aria-label="Progreso del recorrido 3D">
+        <div class="hud-scene-counter">
+            <span id="hud-scene-number">01</span>
+            <span class="counter-divider">/</span>
+            <span>06</span>
+        </div>
 
-                    <!-- Columna Izquierda: Nombre Completo e Identidad Visual -->
-                    <div class="hero-identity reveal">
-                        <div class="eyebrow-group">
-                            <span class="eyebrow">
-                                <span class="status-dot"></span>
-                                Disponible para oportunidades y proyectos
-                            </span>
-                            <span class="role-tag"><i class="fa-solid fa-location-dot" aria-hidden="true"></i> Zona 6, Ciudad de Guatemala</span>
-                        </div>
-
-                        <p class="hero-greeting">¡Hola! Mi nombre completo es</p>
-                        <h1 class="hero-fullname">
-                            Lucas Samuel
-                            <span class="name-highlight">Pajarito Surek</span>
-                        </h1>
-
-                        <div class="hero-dynamic-role">
-                            <span class="role-prefix">Rol:</span>
-                            <span class="typewriter-text" id="typewriter-text">Técnico en Desarrollo de Software</span>
-                            <span class="typewriter-cursor" aria-hidden="true">|</span>
-                        </div>
-
-                        <div class="identity-visual-card tilt-card">
-                            <div class="identity-profile-row">
-                                <div class="identity-avatar-wrap">
-                                    <img src="./img/lucaspajarito.png" alt="Fotografía profesional de Lucas Samuel Pajarito Surek" class="identity-avatar" />
-                                    <span class="avatar-badge" title="Desarrollador activo"><i class="fa-solid fa-check" aria-hidden="true"></i></span>
-                                </div>
-                                <div class="identity-meta">
-                                    <strong>Lucas Samuel Pajarito Surek</strong>
-                                    <span>Técnico en Desarrollo de Software · Full-Stack &amp; Backend</span>
-                                    <div class="identity-location">
-                                        <i class="fa-solid fa-award" aria-hidden="true"></i> Emprendedor · Constante · Decidido (Perfil DISC)
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="hero-code">
-                                <div class="code-heading">
-                                    <span></span><span></span><span></span>
-                                    <small>lucas_pajarito.config.js</small>
-                                </div>
-<pre><code>const lucasPajarito = {
-  titulo: "Técnico en Desarrollo de Software",
-  arquitectura: ["POO", "Principios SOLID", "APIs REST", "MVC"],
-  stack: ["Node.js", "Express", "JavaScript", "SQL", "Flutter", "IA"],
-  idiomas: ["Español (Nativo)", "Inglés (B2)", "Kaqchikel"],
-  compromiso: "Soluciones reales que mejoran la vida de las personas"
-};</code></pre>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Columna Derecha (A la par): Descripción Completa y Propuesta de Valor -->
-                    <div class="hero-description-side reveal">
-                        <div class="description-card tilt-card">
-                            <div class="description-header">
-                                <span class="section-kicker"><i class="fa-solid fa-code" aria-hidden="true"></i> Presentación Profesional</span>
-                                <h2>Pasión por crear <span>soluciones tecnológicas</span> escalables, accesibles y con impacto humano real.</h2>
-                            </div>
-
-                            <div class="description-body">
-                                <p>
-                                    Soy una persona <strong>curiosa, disciplinada y con ganas constantes de aprender</strong>, apasionado por desarrollar software que mejore la vida de las personas y con especial interés en integrar la <strong>inteligencia artificial</strong> en proyectos reales. Mi capacidad de liderazgo, resolución de problemas y trabajo en equipo me impulsa a construir un crecimiento profesional sólido y sostenido.
-                                </p>
-                                <p>
-                                    Desarrollo aplicaciones web y móviles modernas y escalables combinando <strong>HTML5 semántico, CSS3 responsivo y JavaScript (ES6+)</strong> en el frontend con <strong>Node.js, Express, Python, Flutter/Dart y bases de datos SQL (PostgreSQL, MySQL y Firebase)</strong> en el backend. Aplico Programación Orientada a Objetos (POO), principios <strong>SOLID</strong>, estándares de accesibilidad <strong>WCAG AAA</strong> y metodologías ágiles como <strong>Scrum</strong> para entregar código modular, seguro y mantenible.
-                                </p>
-                            </div>
-
-                            <div class="hero-Highlights">
-                                <div class="highlight-item">
-                                    <span class="highlight-icon"><i class="fa-solid fa-server" aria-hidden="true"></i></span>
-                                    <div>
-                                        <strong>Backend &amp; POO</strong>
-                                        <small>Node.js, Express, APIs REST &amp; SOLID</small>
-                                    </div>
-                                </div>
-                                <div class="highlight-item">
-                                    <span class="highlight-icon"><i class="fa-solid fa-laptop-mobile" aria-hidden="true"></i></span>
-                                    <div>
-                                        <strong>Web &amp; Mobile</strong>
-                                        <small>JS ES6+, Flutter/Dart &amp; WCAG AAA</small>
-                                    </div>
-                                </div>
-                                <div class="highlight-item">
-                                    <span class="highlight-icon"><i class="fa-solid fa-brain" aria-hidden="true"></i></span>
-                                    <div>
-                                        <strong>IA &amp; Datos SQL</strong>
-                                        <small>Chatbots, LLMs, PostgreSQL &amp; MySQL</small>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="hero-actions-row">
-                                <div class="hero-buttons">
-                                    <a href="#proyectos" class="btn primary">
-                                        <span>Explorar Proyectos</span>
-                                        <i class="fa-solid fa-layer-group" aria-hidden="true"></i>
-                                    </a>
-                                    <a href="./docs/CV_Lucas_Pajarito_Surek.pdf" target="_blank" rel="noreferrer" class="btn secondary">
-                                        <i class="fa-solid fa-file-pdf" aria-hidden="true"></i>
-                                        <span>Ver mi CV (PDF)</span>
-                                    </a>
-                                    <a href="#contacto" class="btn secondary">
-                                        <i class="fa-solid fa-paper-plane" aria-hidden="true"></i>
-                                        <span>Contactarme</span>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
+        <div class="lateral-track">
+            <div class="lateral-fill" id="lateral-progress-fill"></div>
+            <div class="lateral-dots">
+                <a href="#scene-hero" data-scene-dot="1" class="is-active" aria-label="Escena 1: Hero"></a>
+                <a href="#scene-skills" data-scene-dot="2" aria-label="Escena 2: Skills"></a>
+                <a href="#scene-fog" data-scene-dot="3" aria-label="Escena 3: Paisaje de niebla"></a>
+                <a href="#scene-projects" data-scene-dot="4" aria-label="Escena 4: Proyectos"></a>
+                <a href="#scene-process" data-scene-dot="5" aria-label="Escena 5: Proceso"></a>
+                <a href="#scene-contact" data-scene-dot="6" aria-label="Escena 6: Contacto"></a>
             </div>
+        </div>
 
-            <!-- Cinta en movimiento continuo (Marquee) -->
-            <div class="tech-marquee" aria-hidden="true">
-                <div class="marquee-track">
-                    <span><i class="fa-brands fa-node-js"></i> Node.js &amp; Express</span>
-                    <span><i class="fa-brands fa-js"></i> JavaScript ES6+</span>
-                    <span><i class="fa-solid fa-cubes"></i> POO &amp; Principios SOLID</span>
-                    <span><i class="fa-solid fa-database"></i> SQL · PostgreSQL · MySQL</span>
-                    <span><i class="fa-solid fa-mobile-screen"></i> Flutter &amp; Dart</span>
-                    <span><i class="fa-solid fa-robot"></i> Integración de IA &amp; Chatbots</span>
-                    <span><i class="fa-brands fa-html5"></i> HTML5 &amp; CSS3 Responsivo</span>
-                    <span><i class="fa-brands fa-git-alt"></i> Git · GitHub · Scrum</span>
-                    <span><i class="fa-solid fa-universal-access"></i> Accesibilidad WCAG AAA</span>
-                    <!-- Duplicado para bucle continuo -->
-                    <span><i class="fa-brands fa-node-js"></i> Node.js &amp; Express</span>
-                    <span><i class="fa-brands fa-js"></i> JavaScript ES6+</span>
-                    <span><i class="fa-solid fa-cubes"></i> POO &amp; Principios SOLID</span>
-                    <span><i class="fa-solid fa-database"></i> SQL · PostgreSQL · MySQL</span>
-                    <span><i class="fa-solid fa-mobile-screen"></i> Flutter &amp; Dart</span>
-                    <span><i class="fa-solid fa-robot"></i> Integración de IA &amp; Chatbots</span>
-                    <span><i class="fa-brands fa-html5"></i> HTML5 &amp; CSS3 Responsivo</span>
-                    <span><i class="fa-brands fa-git-alt"></i> Git · GitHub · Scrum</span>
-                    <span><i class="fa-solid fa-universal-access"></i> Accesibilidad WCAG AAA</span>
+        <div class="hud-telemetry" id="hud-camera-z" aria-hidden="true">Z: 12.0m</div>
+    </aside>
+
+    <!-- ===== RECORRIDO CINEMATOGRÁFICO (6 ESCENAS ANCLADAS AL SCROLL) ===== -->
+    <main class="cinema-scroll-container">
+
+        <!-- ESCENA 1: HERO (Objeto 3D Vidrio-Metal + Tipografía gigante delante y detrás) -->
+        <section id="scene-hero" class="cinema-scene scene-hero" aria-label="Presentación principal">
+            <div class="hero-stage">
+                <!-- Capa tipográfica trasera (pasa por detrás del cristal 3D) -->
+                <div class="hero-title-layer hero-title-back" aria-hidden="true">
+                    <span>LUCAS PAJARITO</span>
+                </div>
+
+                <!-- Capa tipográfica frontal en contorno fino (pasa por delante del cristal 3D) -->
+                <h1 class="hero-title-layer hero-title-front">
+                    <span class="sr-only">Lucas Samuel Pajarito Surek — </span>
+                    <span aria-hidden="true">LUCAS PAJARITO</span>
+                </h1>
+
+                <div class="hero-caption-box">
+                    <p class="micro-tag">01 // LUCAS SAMUEL PAJARITO SUREK</p>
+                    <p class="hero-subtitle" data-split>Desarrollador Web · Experiencias Interactivas</p>
+                    <div class="scroll-cue" aria-hidden="true">
+                        <span class="scroll-cue-line"></span>
+                        <span>DESPLAZA PARA AVANZAR LA CÁMARA</span>
+                    </div>
                 </div>
             </div>
         </section>
 
-        <!-- =====================================================================
-             APARTADO INTERMEDIO (PUNTO 5): PAPELERÍA (CV, DISC) Y ENLACES A PLATAFORMAS
-             Ubicado entre Presentación y Sobre mí
-             ===================================================================== -->
-        <section id="papeleria" class="resources-hub section-compact">
-            <div class="container">
-                <div class="hub-wrapper reveal">
-
-                    <!-- Bloque Izquierdo: Papelería Profesional Descargable -->
-                    <div class="hub-column">
-                        <div class="hub-header">
-                            <span class="section-kicker"><i class="fa-solid fa-folder-open" aria-hidden="true"></i> Documentación Oficial</span>
-                            <h3>Papelería y Respaldo Profesional</h3>
-                            <p>Consulta o descarga mi currículum actualizado y mi evaluación psicotécnica de conducta laboral.</p>
-                        </div>
-
-                        <div class="docs-grid">
-                            <article class="doc-card tilt-card">
-                                <div class="doc-icon pdf-accent">
-                                    <i class="fa-solid fa-file-pdf" aria-hidden="true"></i>
-                                </div>
-                                <div class="doc-info">
-                                    <span class="doc-tag">Currículum Vitae · PDF</span>
-                                    <h4>CV — Lucas Samuel Pajarito Surek</h4>
-                                    <p>Trayectoria en Proyecto ALBA, docencia técnica, formación en Campuslands GT y referencias.</p>
-                                    <div class="doc-actions">
-                                        <a href="./docs/CV_Lucas_Pajarito_Surek.pdf" target="_blank" rel="noreferrer" class="doc-btn primary-doc">
-                                            <i class="fa-solid fa-eye" aria-hidden="true"></i> Abrir CV
-                                        </a>
-                                        <a href="./docs/CV_Lucas_Pajarito_Surek.pdf" download="CV_Lucas_Samuel_Pajarito_Surek.pdf" class="doc-btn">
-                                            <i class="fa-solid fa-download" aria-hidden="true"></i> Descargar
-                                        </a>
-                                    </div>
-                                </div>
-                            </article>
-
-                            <article class="doc-card tilt-card">
-                                <div class="doc-icon disc-accent">
-                                    <i class="fa-solid fa-chart-pie" aria-hidden="true"></i>
-                                </div>
-                                <div class="doc-info">
-                                    <span class="doc-tag">Evaluación Conductual · PDF</span>
-                                    <h4>Informe Psicotécnico DISC-NEO</h4>
-                                    <p>Análisis multidimensional de personalidad, liderazgo, constancia (82%) y motivadores laborales.</p>
-                                    <div class="doc-actions">
-                                        <a href="./docs/Perfil_DISC_Lucas_Pajarito.pdf" target="_blank" rel="noreferrer" class="doc-btn primary-doc">
-                                            <i class="fa-solid fa-eye" aria-hidden="true"></i> Ver Informe
-                                        </a>
-                                        <a href="./docs/Perfil_DISC_Lucas_Pajarito.pdf" download="Perfil_DISC_Lucas_Pajarito.pdf" class="doc-btn">
-                                            <i class="fa-solid fa-download" aria-hidden="true"></i> Descargar
-                                        </a>
-                                    </div>
-                                </div>
-                            </article>
-                        </div>
-                    </div>
-
-                    <!-- Bloque Derecho: Enlaces a GitHub y Plataformas de Comunicación -->
-                    <div class="hub-column">
-                        <div class="hub-header">
-                            <span class="section-kicker"><i class="fa-solid fa-share-nodes" aria-hidden="true"></i> Canales y Plataformas</span>
-                            <h3>Conecta Conmigo en Tiempo Real</h3>
-                            <p>Acceso directo a mis repositorios de código, mensajería instantánea y perfiles profesionales.</p>
-                        </div>
-
-                        <div class="platforms-grid">
-                            <a href="https://github.com/lucaspajarito01" target="_blank" rel="noreferrer" class="platform-card tilt-card">
-                                <span class="platform-icon github-bg"><i class="fa-brands fa-github" aria-hidden="true"></i></span>
-                                <div class="platform-meta">
-                                    <strong>GitHub</strong>
-                                    <span>@lucaspajarito01</span>
-                                </div>
-                                <i class="fa-solid fa-arrow-up-right-from-square platform-arrow" aria-hidden="true"></i>
-                            </a>
-
-                            <a href="https://wa.me/50241234463?text=Hola%20Lucas,%20vi%20tu%20portafolio%20profesional%20y%20me%20gustar%C3%ADa%20contactarte." target="_blank" rel="noreferrer" class="platform-card tilt-card">
-                                <span class="platform-icon whatsapp-bg"><i class="fa-brands fa-whatsapp" aria-hidden="true"></i></span>
-                                <div class="platform-meta">
-                                    <strong>WhatsApp</strong>
-                                    <span>(+502) 4123-4463</span>
-                                </div>
-                                <i class="fa-solid fa-arrow-up-right-from-square platform-arrow" aria-hidden="true"></i>
-                            </a>
-
-                            <div class="platform-card tilt-card platform-interactive">
-                                <span class="platform-icon discord-bg"><i class="fa-brands fa-discord" aria-hidden="true"></i></span>
-                                <div class="platform-meta">
-                                    <strong>Discord</strong>
-                                    <span>lucaspajarito01</span>
-                                </div>
-                                <button type="button" class="mini-copy-btn" data-copy-value="lucaspajarito01" aria-label="Copiar usuario de Discord">
-                                    <i class="fa-regular fa-copy" aria-hidden="true"></i>
-                                    <span class="copy-btn-label">Copiar ID</span>
-                                </button>
-                            </div>
-
-                            <a href="https://www.instagram.com/samysurek/" target="_blank" rel="noreferrer" class="platform-card tilt-card">
-                                <span class="platform-icon instagram-bg"><i class="fa-brands fa-instagram" aria-hidden="true"></i></span>
-                                <div class="platform-meta">
-                                    <strong>Instagram</strong>
-                                    <span>@samysurek</span>
-                                </div>
-                                <i class="fa-solid fa-arrow-up-right-from-square platform-arrow" aria-hidden="true"></i>
-                            </a>
-
-                            <a href="mailto:lucaspajarito2023@gmail.com" class="platform-card tilt-card">
-                                <span class="platform-icon email-bg"><i class="fa-solid fa-envelope" aria-hidden="true"></i></span>
-                                <div class="platform-meta">
-                                    <strong>Correo Electrónico</strong>
-                                    <span>lucaspajarito2023@gmail.com</span>
-                                </div>
-                                <i class="fa-solid fa-arrow-up-right-from-square platform-arrow" aria-hidden="true"></i>
-                            </a>
-
-                            <a href="https://www.linkedin.com/in/lucas-samuel-pajarito-surek-9072933b9/" target="_blank" rel="noreferrer" class="platform-card tilt-card">
-                                <span class="platform-icon linkedin-bg"><i class="fa-brands fa-linkedin-in" aria-hidden="true"></i></span>
-                                <div class="platform-meta">
-                                    <strong>LinkedIn</strong>
-                                    <span>Lucas Pajarito Surek</span>
-                                </div>
-                                <i class="fa-solid fa-arrow-up-right-from-square platform-arrow" aria-hidden="true"></i>
-                            </a>
-                        </div>
-                    </div>
-
+        <!-- ESCENA 2: TRAVESÍA DE SKILLS (Campo de cristales flotantes con iconos SVG) -->
+        <section id="scene-skills" class="cinema-scene scene-skills" aria-label="Habilidades de programación">
+            <div class="scene-inner skills-stage">
+                <div class="skills-header-overlay">
+                    <p class="micro-tag">02 // TRAVESÍA DE SKILLS</p>
+                    <h2 class="scene-headline" data-split>Arquitectura y dominio técnico.</h2>
                 </div>
+
+                <!-- Baliza reactiva que muestra el cristal 3D más cercano a la cámara -->
+                <div class="active-skill-beacon" id="active-skill-beacon" aria-live="polite">
+                    <span class="beacon-kicker">NODO ACTIVO EN CÁMARA</span>
+                    <strong class="beacon-title" id="active-skill-name">HTML5 Semántico</strong>
+                    <span class="beacon-sub" id="active-skill-category">Estructura &amp; Accesibilidad WCAG AAA</span>
+                </div>
+
+                <!-- Índice inferior de cristales -->
+                <div class="skills-hud-grid" id="skills-hud-grid" aria-label="Lista de tecnologías"></div>
             </div>
         </section>
 
-        <!-- =====================================================================
-             2. SOBRE MÍ Y MIS CAPACIDADES HUMANAS Y TÉCNICAS
-             Basado en el CV Oficial y el Informe Conductual DISC-NEO
-             ===================================================================== -->
-        <section id="sobre-mi" class="about section">
-            <div class="container">
-
-                <div class="section-heading reveal">
-                    <span class="section-kicker">02 · Identidad, Experiencia y Perfil DISC-NEO</span>
-                    <h2 class="section-title">Sobre mí: Capacidades Humanas y Técnicas</h2>
-                    <p>
-                        La combinación de ingeniería de software rigurosa con liderazgo empático, constancia y disciplina para resolver problemas complejos en equipo.
-                    </p>
-                </div>
-
-                <!-- Fila 1: Perfil Integral + Capacidades Técnicas + Capacidades Humanas (3 columnas equilibradas) -->
-                <div class="about-grid">
-
-                    <!-- Tarjeta 1: Esencia Personal, Idiomas y Equilibrio -->
-                    <article class="about-card reveal tilt-card">
-                        <div class="about-profile-header">
-                            <div class="avatar">
-                                <img src="./img/lucaspajarito.png" alt="Foto de perfil de Lucas Samuel Pajarito Surek" class="profile-img">
-                            </div>
-                            <div>
-                                <span class="card-badge">Esencia Personal</span>
-                                <h3>Quién soy dentro y fuera del código</h3>
-                            </div>
-                        </div>
-
-                        <p>
-                            Soy una persona <strong>curiosa, disciplinada y con ganas de aprender</strong>, con pasión por crear soluciones que mejoren la vida de las personas e interés en integrar la inteligencia artificial en aplicaciones prácticas.
-                        </p>
-                        <p>
-                            Fuera del código, disfruto de la <strong>música, el canto y el tiempo con mi familia y amistades</strong>, momentos que me ayudan a recargar energía, fortalecer mi creatividad y mantener el equilibrio emocional que aplico también en cada proyecto profesional.
-                        </p>
-
-                        <div class="languages-box">
-                            <h4><i class="fa-solid fa-earth-americas" aria-hidden="true"></i> Idiomas que domino</h4>
-                            <div class="lang-pills">
-                                <span><strong>Español:</strong> Nativo</span>
-                                <span><strong>Inglés:</strong> Nivel B2</span>
-                                <span><strong>Kaqchikel:</strong> Hablante</span>
-                            </div>
-                        </div>
-                    </article>
-
-                    <!-- Tarjeta 2: Capacidades Humanas y Conductuales (DISC-NEO + Habilidades Blandas) -->
-                    <article class="about-card reveal tilt-card">
-                        <h3><span class="card-icon"><i class="fa-solid fa-people-group" aria-hidden="true"></i></span> Capacidades Humanas y Perfil DISC</h3>
-                        <p class="disc-headline">
-                            Rasgo Conductual: <strong>Emprendedor · Constante · Decidido</strong>
-                        </p>
-
-                        <div class="soft-skills-list">
-                            <div class="item">
-                                <i class="fa-solid fa-users-gear" aria-hidden="true"></i>
-                                <div>
-                                    <h4>Liderazgo y Trabajo en Equipo</h4>
-                                    <p>Guío equipos hacia objetivos comunes fomentando la colaboración, el apoyo mutuo y la confianza entre sus integrantes.</p>
-                                </div>
-                            </div>
-
-                            <div class="item">
-                                <i class="fa-solid fa-handshake-angle" aria-hidden="true"></i>
-                                <div>
-                                    <h4>Empatía y Resolución de Conflictos</h4>
-                                    <p>Escucho activamente distintos puntos de vista y busco soluciones equilibradas que beneficien a todas las partes.</p>
-                                </div>
-                            </div>
-
-                            <div class="item">
-                                <i class="fa-solid fa-comments" aria-hidden="true"></i>
-                                <div>
-                                    <h4>Comunicación, Iniciativa y Constancia</h4>
-                                    <p>Tomo la iniciativa ante retos nuevos, sostengo mis objetivos con constancia y comunico ideas con claridad a perfiles técnicos y no técnicos.</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Indicadores cuantitativos del informe DISC-NEO -->
-                        <div class="disc-metrics">
-                            <div class="disc-pill">
-                                <span>Constancia (S)</span>
-                                <strong>82%</strong>
-                            </div>
-                            <div class="disc-pill">
-                                <span>Decisión (D)</span>
-                                <strong>64%</strong>
-                            </div>
-                            <div class="disc-pill">
-                                <span>Responsabilidad</span>
-                                <strong>88/120</strong>
-                            </div>
-                            <div class="disc-pill">
-                                <span>Bien Común</span>
-                                <strong>100%</strong>
-                            </div>
-                        </div>
-                    </article>
-
-                    <!-- Tarjeta 3: Capacidades Técnicas de Ingeniería -->
-                    <article class="about-card reveal tilt-card">
-                        <h3><span class="card-icon"><i class="fa-solid fa-microchip" aria-hidden="true"></i></span> Capacidades Técnicas de Software</h3>
-
-                        <div class="soft-skills-list">
-                            <div class="item">
-                                <i class="fa-solid fa-server" aria-hidden="true"></i>
-                                <div>
-                                    <h4>Backend, POO y Principios SOLID</h4>
-                                    <p>Desarrollo APIs REST con <strong>Node.js y Express</strong>, aplicando encapsulamiento, herencia, polimorfismo, abstracción y arquitectura limpia.</p>
-                                </div>
-                            </div>
-
-                            <div class="item">
-                                <i class="fa-solid fa-code" aria-hidden="true"></i>
-                                <div>
-                                    <h4>Frontend, Mobile y Datos Relacionales</h4>
-                                    <p>Diseño interfaces con HTML5, CSS3, JavaScript (ES6+) y Flutter/Dart. Escribo consultas SQL desde básicas hasta avanzadas y trabajo con Git, GitHub y Scrum.</p>
-                                </div>
-                            </div>
-
-                            <div class="item">
-                                <i class="fa-solid fa-wand-magic-sparkles" aria-hidden="true"></i>
-                                <div>
-                                    <h4>Integración de Inteligencia Artificial</h4>
-                                    <p>Integro herramientas de IA, chatbots y modelos de lenguaje en aplicaciones web cuidando la seguridad, la optimización de costos y la validación de respuestas.</p>
-                                </div>
-                            </div>
-
-                            <div class="item">
-                                <i class="fa-solid fa-bolt" aria-hidden="true"></i>
-                                <div>
-                                    <h4>Automatización Industrial y Hardware</h4>
-                                    <p>Base sólida en circuitos eléctricos, controladores lógicos programables (PLC), sensores y diagnóstico técnico de fallas.</p>
-                                </div>
-                            </div>
-                        </div>
-                    </article>
-
-                </div>
-
-                <!-- Fila 2: Experiencia Laboral y Formación Académica (2 columnas simétricas sin espacios vacíos) -->
-                <div class="trajectory-grid">
-
-                    <!-- Columna Experiencia Laboral -->
-                    <div class="trajectory-card reveal tilt-card">
-                        <div class="trajectory-header">
-                            <span class="card-icon"><i class="fa-solid fa-briefcase" aria-hidden="true"></i></span>
-                            <div>
-                                <span class="section-kicker">Trayectoria Real</span>
-                                <h3>Experiencia Laboral y de Desarrollo</h3>
-                            </div>
-                        </div>
-
-                        <div class="timeline-list">
-                            <div class="timeline-item">
-                                <div class="timeline-meta">
-                                    <span class="timeline-role">Desarrollador Backend &amp; Mobile · Proyecto ALBA</span>
-                                    <span class="timeline-date">Campuslands GT · En Desarrollo</span>
-                                </div>
-                                <p>
-                                    Diseño y desarrollo móvil de <strong>Alba</strong>, plataforma de salud y adherencia farma-geriátrica para adultos mayores, cuidadores y personal médico. Colaboración en un <strong>equipo multidisciplinario de 12 desarrolladores</strong> con Flutter/Dart, Firebase y Git. Implementación de manejo de estado con <code>Provider</code>, servicios en segundo plano para detección de caídas con giroscopio/acelerómetro, recordatorios dinámicos, lectura de códigos QR y estándares de accesibilidad <strong>WCAG AAA</strong>.
-                                </p>
-                            </div>
-
-                            <div class="timeline-item">
-                                <div class="timeline-meta">
-                                    <span class="timeline-role">Docente de Electricidad Domiciliar</span>
-                                    <span class="timeline-date">Escuela Experimental “Villa de los Niños” · 2024 – 2026</span>
-                                </div>
-                                <p>
-                                    Diseño y ejecución de planificaciones educativas semanales y anuales para formación técnica, coordinación de proyectos prácticos y fomento del trabajo colaborativo, la disciplina y la resolución de problemas en el aula.
-                                </p>
-                            </div>
-
-                            <div class="timeline-item">
-                                <div class="timeline-meta">
-                                    <span class="timeline-role">Técnico Auxiliar de Electricidad (Prácticas Supervisadas)</span>
-                                    <span class="timeline-date">Molinos Venecia S.A. · Sep 2024 – Oct 2024</span>
-                                </div>
-                                <p>
-                                    Mantenimiento preventivo y correctivo de motores eléctricos y variadores de frecuencia, diagnóstico eficiente de fallas en entornos industriales y colaboración activa para garantizar la continuidad operativa.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Columna Formación Académica y Autoconocimiento DISC -->
-                    <div class="trajectory-card reveal tilt-card">
-                        <div class="trajectory-header">
-                            <span class="card-icon"><i class="fa-solid fa-graduation-cap" aria-hidden="true"></i></span>
-                            <div>
-                                <span class="section-kicker">Preparación Técnica</span>
-                                <h3>Formación Académica y Enfoque Profesional</h3>
-                            </div>
-                        </div>
-
-                        <div class="timeline-list">
-                            <div class="timeline-item">
-                                <div class="timeline-meta">
-                                    <span class="timeline-role">Técnico en Desarrollo de Software</span>
-                                    <span class="timeline-date">Campuslands GT · En Curso</span>
-                                </div>
-                                <p>
-                                    Desarrollo de aplicaciones web modernas y escalables con HTML5 semántico, CSS3 responsivo, JavaScript (ES6+), SQL relacional y Node.js para backends y APIs REST. Incorporación de herramientas de inteligencia artificial y buenas prácticas de manejo de errores para garantizar la estabilidad del software.
-                                </p>
-                            </div>
-
-                            <div class="timeline-item">
-                                <div class="timeline-meta">
-                                    <span class="timeline-role">Bachillerato en Ciencias y Letras con Orientación en Electricidad</span>
-                                    <span class="timeline-date">Escuela Experimental “Villa de los Niños” · 2023 – 2024</span>
-                                </div>
-                                <p>
-                                    Instalación de redes eléctricas y de datos para laboratorios de computación, interpretación de planos industriales y programación de controladores lógicos programables (<strong>PLC</strong>) para líneas de producción automatizadas.
-                                </p>
-                            </div>
-
-                            <div class="timeline-item">
-                                <div class="timeline-meta">
-                                    <span class="timeline-role">Síntesis de Perfil Conductual (DISC-NEO)</span>
-                                    <span class="timeline-date">Autonomía · Prudencia · Compromiso</span>
-                                </div>
-                                <p>
-                                    Mi perfil combina <strong>iniciativa y constancia</strong> con confianza en mis recursos para afrontar tareas exigentes. Me enfoco en avanzar con autonomía, cumplir cada compromiso asumido con prudencia y apoyar activamente a mi equipo.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-
+        <!-- ESCENA 3: PAISAJE DE NIEBLA (Montañas en parallax + Shader FBM volumétrico) -->
+        <section id="scene-fog" class="cinema-scene scene-fog" aria-label="Visión creativa">
+            <div class="scene-inner fog-stage">
+                <p class="micro-tag">03 // TRANSICIÓN VOLUMÉTRICA</p>
+                <h2 class="fog-cinematic-phrase">Del diseño al código.</h2>
+                <p class="fog-micro-sub">Precisión visual · Rendimiento a 60 FPS · Código limpio</p>
             </div>
         </section>
 
-        <!-- =====================================================================
-             3. ESPACIO ORDENADO DE SKILLS DE PROGRAMACIÓN
-             ===================================================================== -->
-        <section id="habilidades" class="skills section">
-            <div class="container">
-
-                <div class="section-heading reveal">
-                    <span class="section-kicker">03 · Stack Tecnológico Ordenado</span>
-                    <h2 class="section-title">Mis Skills de Programación</h2>
-                    <p>
-                        Tecnologías, lenguajes, paradigmas de arquitectura y herramientas organizadas por área de especialización.
-                    </p>
+        <!-- ESCENA 4: PROYECTOS (Tarjetas Glassmorphism flotando en 3D con tilt y desenfoque) -->
+        <section id="scene-projects" class="cinema-scene scene-projects" aria-label="Proyectos destacados">
+            <div class="scene-inner projects-stage">
+                <div class="section-minimal-header">
+                    <p class="micro-tag">04 // SISTEMAS &amp; ARQUITECTURA</p>
+                    <h2 class="scene-headline" data-split>Proyectos de ingeniería real.</h2>
                 </div>
 
-                <!-- Filtros interactivos por categoría -->
-                <div class="skills-filter reveal" role="tablist" aria-label="Filtrar habilidades por categoría">
-                    <button class="filter-btn is-active" type="button" data-skill-filter="all" role="tab" aria-selected="true">
-                        <i class="fa-solid fa-border-all" aria-hidden="true"></i> Todas las áreas
-                    </button>
-                    <button class="filter-btn" type="button" data-skill-filter="backend" role="tab" aria-selected="false">
-                        <i class="fa-solid fa-server" aria-hidden="true"></i> 1. Backend, POO &amp; IA
-                    </button>
-                    <button class="filter-btn" type="button" data-skill-filter="frontend" role="tab" aria-selected="false">
-                        <i class="fa-solid fa-laptop-code" aria-hidden="true"></i> 2. Frontend &amp; Mobile
-                    </button>
-                    <button class="filter-btn" type="button" data-skill-filter="datos" role="tab" aria-selected="false">
-                        <i class="fa-solid fa-database" aria-hidden="true"></i> 3. Bases de Datos &amp; SQL
-                    </button>
-                    <button class="filter-btn" type="button" data-skill-filter="herramientas" role="tab" aria-selected="false">
-                        <i class="fa-solid fa-screwdriver-wrench" aria-hidden="true"></i> 4. Git, Scrum &amp; Automatización
-                    </button>
-                </div>
-
-                <div class="skills-categories">
-
-                    <!-- CATEGORÍA 1: BACKEND, POO, SOLID E IA -->
-                    <div class="skill-category-block reveal" data-category-group="backend">
-                        <div class="category-header">
-                            <span class="category-number">01</span>
-                            <div>
-                                <h3>Backend, Arquitectura de Software e Inteligencia Artificial</h3>
-                                <p>Construcción de servidores modulares, APIs RESTful, lógica algorítmica e integración segura de modelos de IA.</p>
-                            </div>
-                        </div>
-
-                        <div class="skills-cards-grid">
-                            <article class="skill-card tilt-card">
-                                <div class="skill-card-top">
-                                    <div class="skill-icon node-color"><i class="fa-brands fa-node-js" aria-hidden="true"></i></div>
-                                    <div class="skill-title-group">
-                                        <h4>Node.js &amp; Express</h4>
-                                        <span class="skill-level-badge">Desarrollo de APIs REST</span>
-                                    </div>
-                                </div>
-                                <p class="skill-desc">
-                                    Creación de servidores backend escalables, rutas RESTful, middlewares, manejo estructurado de errores y conexión con bases de datos.
-                                </p>
-                                <div class="skill-meter" aria-label="Nivel de dominio 85%">
-                                    <div class="skill-meter-fill" style="--target-width: 85%"></div>
-                                </div>
-                                <div class="skill-tags">
-                                    <span>APIs REST</span>
-                                    <span>Express.js</span>
-                                    <span>Arquitectura Modular</span>
-                                </div>
-                            </article>
-
-                            <article class="skill-card tilt-card">
-                                <div class="skill-card-top">
-                                    <div class="skill-icon data-color"><i class="fa-solid fa-cubes" aria-hidden="true"></i></div>
-                                    <div class="skill-title-group">
-                                        <h4>POO &amp; Principios SOLID</h4>
-                                        <span class="skill-level-badge">Arquitectura Limpia</span>
-                                    </div>
-                                </div>
-                                <p class="skill-desc">
-                                    Aplicación de encapsulamiento, herencia, polimorfismo, abstracción y principios SOLID para escribir software desacoplado y fácil de mantener.
-                                </p>
-                                <div class="skill-meter" aria-label="Nivel de dominio 86%">
-                                    <div class="skill-meter-fill" style="--target-width: 86%"></div>
-                                </div>
-                                <div class="skill-tags">
-                                    <span>Encapsulamiento</span>
-                                    <span>Polimorfismo</span>
-                                    <span>SOLID</span>
-                                </div>
-                            </article>
-
-                            <article class="skill-card tilt-card">
-                                <div class="skill-card-top">
-                                    <div class="skill-icon python-color"><i class="fa-brands fa-python" aria-hidden="true"></i></div>
-                                    <div class="skill-title-group">
-                                        <h4>Python &amp; Sistemas CLI</h4>
-                                        <span class="skill-level-badge">Lógica &amp; Automatización</span>
-                                    </div>
-                                </div>
-                                <p class="skill-desc">
-                                    Desarrollo de sistemas de gestión por consola (librerías, inventarios, gimnasios), bots automatizados y estructuras de datos eficientes.
-                                </p>
-                                <div class="skill-meter" aria-label="Nivel de dominio 84%">
-                                    <div class="skill-meter-fill" style="--target-width: 84%"></div>
-                                </div>
-                                <div class="skill-tags">
-                                    <span>CLI Systems</span>
-                                    <span>Algoritmos</span>
-                                    <span>Bots</span>
-                                </div>
-                            </article>
-                        </div>
-                    </div>
-
-                    <!-- CATEGORÍA 2: FRONTEND, MOBILE Y ACCESIBILIDAD -->
-                    <div class="skill-category-block reveal" data-category-group="frontend">
-                        <div class="category-header">
-                            <span class="category-number">02</span>
-                            <div>
-                                <h3>Desarrollo Frontend, Aplicaciones Móviles y Accesibilidad</h3>
-                                <p>Interfaces responsivas, dinámicas e inclusivas pensadas para ofrecer una experiencia fluida en cualquier pantalla.</p>
-                            </div>
-                        </div>
-
-                        <div class="skills-cards-grid">
-                            <article class="skill-card tilt-card">
-                                <div class="skill-card-top">
-                                    <div class="skill-icon js-color"><i class="fa-brands fa-js" aria-hidden="true"></i></div>
-                                    <div class="skill-title-group">
-                                        <h4>JavaScript (ES6+)</h4>
-                                        <span class="skill-level-badge">Dominio Sólido</span>
-                                    </div>
-                                </div>
-                                <p class="skill-desc">
-                                    Lógica de interfaz modular, manipulación del DOM, consumo de APIs asíncronas, eventos dinámicos y almacenamiento en navegador.
-                                </p>
-                                <div class="skill-meter" aria-label="Nivel de dominio 86%">
-                                    <div class="skill-meter-fill" style="--target-width: 86%"></div>
-                                </div>
-                                <div class="skill-tags">
-                                    <span>ES6+ Modules</span>
-                                    <span>DOM &amp; Eventos</span>
-                                    <span>Async / Fetch</span>
-                                </div>
-                            </article>
-
-                            <article class="skill-card tilt-card">
-                                <div class="skill-card-top">
-                                    <div class="skill-icon html-color"><i class="fa-brands fa-html5" aria-hidden="true"></i></div>
-                                    <div class="skill-title-group">
-                                        <h4>HTML5 &amp; CSS3 Responsivo</h4>
-                                        <span class="skill-level-badge">Dominio Sólido</span>
-                                    </div>
-                                </div>
-                                <p class="skill-desc">
-                                    Maquetación semántica, CSS Grid, Flexbox, temas modo oscuro/claro, animaciones fluidas y cumplimiento de accesibilidad WCAG AAA.
-                                </p>
-                                <div class="skill-meter" aria-label="Nivel de dominio 90%">
-                                    <div class="skill-meter-fill" style="--target-width: 90%"></div>
-                                </div>
-                                <div class="skill-tags">
-                                    <span>Semántica</span>
-                                    <span>CSS Grid &amp; Flex</span>
-                                    <span>WCAG AAA</span>
-                                </div>
-                            </article>
-
-                            <article class="skill-card tilt-card">
-                                <div class="skill-card-top">
-                                    <div class="skill-icon css-color"><i class="fa-solid fa-mobile-screen-button" aria-hidden="true"></i></div>
-                                    <div class="skill-title-group">
-                                        <h4>Flutter &amp; Dart</h4>
-                                        <span class="skill-level-badge">Desarrollo Móvil</span>
-                                    </div>
-                                </div>
-                                <p class="skill-desc">
-                                    Arquitectura limpia móvil, manejo de estado con Provider, servicios en segundo plano, sensores (giroscopio/acelerómetro) y lectura QR.
-                                </p>
-                                <div class="skill-meter" aria-label="Nivel de dominio 78%">
-                                    <div class="skill-meter-fill" style="--target-width: 78%"></div>
-                                </div>
-                                <div class="skill-tags">
-                                    <span>Provider</span>
-                                    <span>Sensores &amp; QR</span>
-                                    <span>Clean Architecture</span>
-                                </div>
-                            </article>
-                        </div>
-                    </div>
-
-                    <!-- CATEGORÍA 3: BASES DE DATOS Y ESTRUCTURAS -->
-                    <div class="skill-category-block reveal" data-category-group="datos">
-                        <div class="category-header">
-                            <span class="category-number">03</span>
-                            <div>
-                                <h3>Bases de Datos Relacionales, NoSQL y Procesamiento de Datos</h3>
-                                <p>Modelado de esquemas, consultas SQL desde básicas hasta avanzadas e integración de datos estructurados.</p>
-                            </div>
-                        </div>
-
-                        <div class="skills-cards-grid">
-                            <article class="skill-card tilt-card">
-                                <div class="skill-card-top">
-                                    <div class="skill-icon pg-color"><i class="fa-solid fa-database" aria-hidden="true"></i></div>
-                                    <div class="skill-title-group">
-                                        <h4>PostgreSQL &amp; SQL Avanzado</h4>
-                                        <span class="skill-level-badge">Modelado &amp; Consultas</span>
-                                    </div>
-                                </div>
-                                <p class="skill-desc">
-                                    Consultas analíticas, relaciones complejas, tablas temporales e importación/transformación nativa de datos con <code>XMLTABLE</code> y <code>JSONB</code>.
-                                </p>
-                                <div class="skill-meter" aria-label="Nivel de dominio 84%">
-                                    <div class="skill-meter-fill" style="--target-width: 84%"></div>
-                                </div>
-                                <div class="skill-tags">
-                                    <span>PostgreSQL</span>
-                                    <span>JSONB &amp; XML</span>
-                                    <span>JOINs &amp; Agregaciones</span>
-                                </div>
-                            </article>
-
-                            <article class="skill-card tilt-card">
-                                <div class="skill-card-top">
-                                    <div class="skill-icon mysql-color"><i class="fa-solid fa-server" aria-hidden="true"></i></div>
-                                    <div class="skill-title-group">
-                                        <h4>MySQL</h4>
-                                        <span class="skill-level-badge">Diseño Relacional</span>
-                                    </div>
-                                </div>
-                                <p class="skill-desc">
-                                    Diseño de tablas normalizadas, integridad referencial, operaciones CRUD optimizadas y persistencia de datos para sistemas de gestión.
-                                </p>
-                                <div class="skill-meter" aria-label="Nivel de dominio 84%">
-                                    <div class="skill-meter-fill" style="--target-width: 84%"></div>
-                                </div>
-                                <div class="skill-tags">
-                                    <span>Esquemas SQL</span>
-                                    <span>Integridad</span>
-                                    <span>CRUD</span>
-                                </div>
-                            </article>
-
-                            <article class="skill-card tilt-card">
-                                <div class="skill-card-top">
-                                    <div class="skill-icon html-color"><i class="fa-solid fa-fire" aria-hidden="true"></i></div>
-                                    <div class="skill-title-group">
-                                        <h4>Firebase &amp; JSON / XML</h4>
-                                        <span class="skill-level-badge">Cloud &amp; Datos</span>
-                                    </div>
-                                </div>
-                                <p class="skill-desc">
-                                    Sincronización en tiempo real para aplicaciones móviles, vinculación de roles y estructuración de catálogos en formatos JSON y XML.
-                                </p>
-                                <div class="skill-meter" aria-label="Nivel de dominio 80%">
-                                    <div class="skill-meter-fill" style="--target-width: 80%"></div>
-                                </div>
-                                <div class="skill-tags">
-                                    <span>Firebase</span>
-                                    <span>Tiempo Real</span>
-                                    <span>Intercambio de Datos</span>
-                                </div>
-                            </article>
-                        </div>
-                    </div>
-
-                    <!-- CATEGORÍA 4: IA, GIT, SCRUM Y AUTOMATIZACIÓN -->
-                    <div class="skill-category-block reveal" data-category-group="herramientas">
-                        <div class="category-header">
-                            <span class="category-number">04</span>
-                            <div>
-                                <h3>Inteligencia Artificial, Automatización y Trabajo Colaborativo Ágil</h3>
-                                <p>Flujos modernos de ingeniería, control de versiones en equipos multidisciplinarios y orquestación de procesos.</p>
-                            </div>
-                        </div>
-
-                        <div class="skills-cards-grid">
-                            <article class="skill-card tilt-card">
-                                <div class="skill-card-top">
-                                    <div class="skill-icon ui-color"><i class="fa-solid fa-brain" aria-hidden="true"></i></div>
-                                    <div class="skill-title-group">
-                                        <h4>Inteligencia Artificial Aplicada</h4>
-                                        <span class="skill-level-badge">Innovación Práctica</span>
-                                    </div>
-                                </div>
-                                <p class="skill-desc">
-                                    Integración de chatbots y modelos de lenguaje (LLMs) en aplicaciones web, cuidando la seguridad, el control de costos y la validación de respuestas.
-                                </p>
-                                <div class="skill-meter" aria-label="Nivel de dominio 85%">
-                                    <div class="skill-meter-fill" style="--target-width: 85%"></div>
-                                </div>
-                                <div class="skill-tags">
-                                    <span>LLMs &amp; Chatbots</span>
-                                    <span>Validación</span>
-                                    <span>Seguridad IA</span>
-                                </div>
-                            </article>
-
-                            <article class="skill-card tilt-card">
-                                <div class="skill-card-top">
-                                    <div class="skill-icon git-color"><i class="fa-brands fa-git-alt" aria-hidden="true"></i></div>
-                                    <div class="skill-title-group">
-                                        <h4>Git, GitHub &amp; Scrum</h4>
-                                        <span class="skill-level-badge">Flujo Colaborativo</span>
-                                    </div>
-                                </div>
-                                <p class="skill-desc">
-                                    Experiencia trabajando en ramas independientes dentro de equipos de hasta 12 desarrolladores bajo ceremonias ágiles Scrum y revisiones de código.
-                                </p>
-                                <div class="skill-meter" aria-label="Nivel de dominio 88%">
-                                    <div class="skill-meter-fill" style="--target-width: 88%"></div>
-                                </div>
-                                <div class="skill-tags">
-                                    <span>Git Branching</span>
-                                    <span>GitHub</span>
-                                    <span>Scrum Ágil</span>
-                                </div>
-                            </article>
-
-                            <article class="skill-card tilt-card">
-                                <div class="skill-card-top">
-                                    <div class="skill-icon n8n-color"><i class="fa-solid fa-diagram-project" aria-hidden="true"></i></div>
-                                    <div class="skill-title-group">
-                                        <h4>n8n &amp; Automatización PLC</h4>
-                                        <span class="skill-level-badge">Orquestación de Flujos</span>
-                                    </div>
-                                </div>
-                                <p class="skill-desc">
-                                    Automatización de procesos digitales con webhooks y nodos en n8n, complementada con lógica de control automatizado en PLC industriales.
-                                </p>
-                                <div class="skill-meter" aria-label="Nivel de dominio 84%">
-                                    <div class="skill-meter-fill" style="--target-width: 84%"></div>
-                                </div>
-                                <div class="skill-tags">
-                                    <span>n8n Workflows</span>
-                                    <span>Webhooks</span>
-                                    <span>Lógica de Control</span>
-                                </div>
-                            </article>
-                        </div>
-                    </div>
-
-                </div>
+                <!-- Contenedor poblado dinámicamente desde /js/config.js -->
+                <div class="projects-glass-grid" id="projects-glass-grid"></div>
             </div>
         </section>
 
-        <!-- =====================================================================
-             4. APARTADO DE PROYECTOS DESTACADOS
-             Incluye los 3 nuevos proyectos solicitados + los 3 proyectos visuales + Laboratorio SQL
-             ===================================================================== -->
-        <section id="proyectos" class="projects section">
-            <div class="container">
-
-                <div class="section-heading reveal">
-                    <span class="section-kicker">04 · Portafolio de Soluciones Reales</span>
-                    <h2 class="section-title">Mis Proyectos de Desarrollo</h2>
-                    <p>
-                        Desde backends de exploración de películas y sistemas de gestión para librerías y gimnasios, hasta aplicaciones web interactivas y bots de automatización.
-                    </p>
+        <!-- ESCENA 5: PROCESO (Línea de tiempo 3D — Tubo de luz: Idea → Diseño → Código → Despliegue) -->
+        <section id="scene-process" class="cinema-scene scene-process" aria-label="Proceso de desarrollo">
+            <div class="scene-inner process-stage">
+                <div class="section-minimal-header">
+                    <p class="micro-tag">05 // FLUJO DE EJECUCIÓN</p>
+                    <h2 class="scene-headline" data-split>Idea. Diseño. Código. Despliegue.</h2>
                 </div>
 
-                <!-- Filtros de proyectos -->
-                <div class="skills-filter reveal" role="tablist" aria-label="Filtrar proyectos por tipo">
-                    <button class="filter-btn is-active" type="button" data-project-filter="all" role="tab" aria-selected="true">
-                        <i class="fa-solid fa-layer-group" aria-hidden="true"></i> Todos los Proyectos (6)
-                    </button>
-                    <button class="filter-btn" type="button" data-project-filter="backend-cli" role="tab" aria-selected="false">
-                        <i class="fa-solid fa-terminal" aria-hidden="true"></i> Backend &amp; Sistemas de Gestión
-                    </button>
-                    <button class="filter-btn" type="button" data-project-filter="web-bots" role="tab" aria-selected="false">
-                        <i class="fa-solid fa-window-maximize" aria-hidden="true"></i> Aplicaciones Web &amp; Automatización
-                    </button>
-                </div>
-
-                <div class="projects-grid">
-
-                    <!-- PROYECTO 1: IMDB DE PELÍCULAS (What to watch today?) -->
-                    <article class="project-card reveal tilt-card" data-project-category="backend-cli">
-                        <div class="project-image project-visual-banner movie-banner">
-                            <div class="banner-icon-wrap">
-                                <i class="fa-solid fa-film" aria-hidden="true"></i>
-                            </div>
-                            <div class="banner-code-preview">
-                                <span>GET /api/movies/recommendations</span>
-                                <small>IMDB Explorer · Backend API</small>
-                            </div>
-                            <span class="project-badge">Backend &amp; API</span>
-                        </div>
-                        <div class="project-body">
-                            <div>
-                                <span class="project-type">Catálogo Cinematográfico · Backend</span>
-                                <h3>What to Watch Today? — IMDB de Películas</h3>
-                                <p>
-                                    Plataforma y servicio backend estilo IMDB diseñado para explorar catálogos de películas, consultar fichas técnicas, calificaciones, géneros y ayudar a los usuarios a descubrir qué película ver hoy mediante filtros estructurados y arquitectura limpia.
-                                </p>
-                                <ul class="project-highlights">
-                                    <li><i class="fa-solid fa-check" aria-hidden="true"></i> Arquitectura backend modular para exploración y filtrado de películas.</li>
-                                    <li><i class="fa-solid fa-check" aria-hidden="true"></i> Manejo estructurado de rutas, controladores y respuestas de datos.</li>
-                                </ul>
-                            </div>
-                            <div>
-                                <div class="project-tech-list">
-                                    <span>Node.js / Backend</span>
-                                    <span>REST API</span>
-                                    <span>POO &amp; SOLID</span>
-                                    <span>JSON Data</span>
-                                </div>
-                                <a href="https://github.com/lucaspajarito01/wtwt_movie_explorer_backend.git" target="_blank" rel="noreferrer" class="project-link">
-                                    Explorar repositorio en GitHub <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
-                                </a>
-                            </div>
-                        </div>
-                    </article>
-
-                    <!-- PROYECTO 2: SISTEMA DE LIBRERÍAS (Library_cli_system) -->
-                    <article class="project-card reveal tilt-card" data-project-category="backend-cli">
-                        <div class="project-image project-visual-banner library-banner">
-                            <div class="banner-icon-wrap">
-                                <i class="fa-solid fa-book-open-reader" aria-hidden="true"></i>
-                            </div>
-                            <div class="banner-code-preview">
-                                <span>library_cli &gt; prestamos · ventas · stock</span>
-                                <small>Gestión Bibliográfica &amp; Clientes</small>
-                            </div>
-                            <span class="project-badge">Sistema Integral</span>
-                        </div>
-                        <div class="project-body">
-                            <div>
-                                <span class="project-type">Préstamos, Ventas · Clientes &amp; Stock</span>
-                                <h3>Library CLI System — Sistema de Librerías</h3>
-                                <p>
-                                    Sistema completo para la gestión de préstamo y venta de libros que integra al mismo tiempo la administración de clientes y el control en tiempo real del inventario bibliográfico, garantizando trazabilidad en cada operación.
-                                </p>
-                                <ul class="project-highlights">
-                                    <li><i class="fa-solid fa-check" aria-hidden="true"></i> Control simultáneo de préstamos activos, devoluciones y venta directa.</li>
-                                    <li><i class="fa-solid fa-check" aria-hidden="true"></i> Gestión de cartera de clientes y actualización automática de stock.</li>
-                                </ul>
-                            </div>
-                            <div>
-                                <div class="project-tech-list">
-                                    <span>CLI Architecture</span>
-                                    <span>POO</span>
-                                    <span>Inventario &amp; Ventas</span>
-                                    <span>Gestión de Clientes</span>
-                                </div>
-                                <a href="https://github.com/lucaspajarito01/library_cli_system.git" target="_blank" rel="noreferrer" class="project-link">
-                                    Explorar repositorio en GitHub <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
-                                </a>
-                            </div>
-                        </div>
-                    </article>
-
-                    <!-- PROYECTO 3: SISTEMA GESTIÓN DE GIMNASIO (Gym_system) -->
-                    <article class="project-card reveal tilt-card" data-project-category="backend-cli">
-                        <div class="project-image project-visual-banner gym-banner">
-                            <div class="banner-icon-wrap">
-                                <i class="fa-solid fa-dumbbell" aria-hidden="true"></i>
-                            </div>
-                            <div class="banner-code-preview">
-                                <span>gym_system &gt; membresías · rutinas</span>
-                                <small>Control Deportivo &amp; Administrativo</small>
-                            </div>
-                            <span class="project-badge">Software de Gestión</span>
-                        </div>
-                        <div class="project-body">
-                            <div>
-                                <span class="project-type">Membresías · Operaciones de Gimnasio</span>
-                                <h3>Gym System — Gestión de Gimnasio</h3>
-                                <p>
-                                    Sistema diseñado para centralizar la administración operativa de un gimnasio: registro y seguimiento de miembros, control de planes y membresías, asignación de rutinas y organización eficiente de la información.
-                                </p>
-                                <ul class="project-highlights">
-                                    <li><i class="fa-solid fa-check" aria-hidden="true"></i> Administración estructurada de usuarios, membresías y estados de cuenta.</li>
-                                    <li><i class="fa-solid fa-check" aria-hidden="true"></i> Código modular orientado a objetos con validaciones de negocio.</li>
-                                </ul>
-                            </div>
-                            <div>
-                                <div class="project-tech-list">
-                                    <span>Lógica de Negocio</span>
-                                    <span>POO</span>
-                                    <span>Membresías</span>
-                                    <span>Control de Datos</span>
-                                </div>
-                                <a href="https://github.com/lucaspajarito01/gym_system.git" target="_blank" rel="noreferrer" class="project-link">
-                                    Explorar repositorio en GitHub <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
-                                </a>
-                            </div>
-                        </div>
-                    </article>
-
-                    <!-- PROYECTO 4: CAMPUSPARKING -->
-                    <article class="project-card reveal tilt-card" data-project-category="web-bots">
-                        <div class="project-image">
-                            <img src="./img/campusparking.png" alt="Vista del sistema de gestión CampusParking" loading="lazy">
-                            <span class="project-badge">Aplicación Web</span>
-                        </div>
-                        <div class="project-body">
-                            <div>
-                                <span class="project-type">Gestión · Interfaz Interactiva</span>
-                                <h3>CampusParking — Sistema de Parqueo</h3>
-                                <p>
-                                    Aplicación web para administrar el ingreso, salida y disponibilidad de espacios de estacionamiento en tiempo real, con generación de reportes operativos e interfaz visual intuitiva.
-                                </p>
-                                <ul class="project-highlights">
-                                    <li><i class="fa-solid fa-check" aria-hidden="true"></i> Monitoreo visual de zonas disponibles y ocupadas.</li>
-                                    <li><i class="fa-solid fa-check" aria-hidden="true"></i> Reportes detallados y validación de registros vehiculares.</li>
-                                </ul>
-                            </div>
-                            <div>
-                                <div class="project-tech-list">
-                                    <span>JavaScript ES6+</span>
-                                    <span>HTML5</span>
-                                    <span>CSS3</span>
-                                    <span>DOM Dinámico</span>
-                                </div>
-                                <a href="https://github.com/lucaspajarito01/Proyecto--JavaScript.-CampusParking-Lucas-Pajarito-" target="_blank" rel="noreferrer" class="project-link">
-                                    Explorar repositorio en GitHub <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
-                                </a>
-                            </div>
-                        </div>
-                    </article>
-
-                    <!-- PROYECTO 5: TUTOR_BOT -->
-                    <article class="project-card reveal tilt-card" data-project-category="web-bots">
-                        <div class="project-image">
-                            <img src="./img/tutorbot.png" alt="Vista del bot de gestión de tutorías Tutor_Bot" loading="lazy">
-                            <span class="project-badge">Automatización</span>
-                        </div>
-                        <div class="project-body">
-                            <div>
-                                <span class="project-type">Automatización · Bot Inteligente</span>
-                                <h3>Tutor_Bot — Gestión de Tutorías</h3>
-                                <p>
-                                    Bot inteligente que organiza y automatiza la gestión de asignaciones de tutorías académicas, agilizando la coordinación de horarios entre estudiantes y tutores.
-                                </p>
-                                <ul class="project-highlights">
-                                    <li><i class="fa-solid fa-check" aria-hidden="true"></i> Automatización de asignaciones eliminando cuellos de botella manuales.</li>
-                                    <li><i class="fa-solid fa-check" aria-hidden="true"></i> Proyecto colaborativo con control de versiones en Git/GitHub.</li>
-                                </ul>
-                            </div>
-                            <div>
-                                <div class="project-tech-list">
-                                    <span>Automatización</span>
-                                    <span>Bot Logic</span>
-                                    <span>Flujos</span>
-                                    <span>Git Colaborativo</span>
-                                </div>
-                                <a href="https://github.com/lucaspajarito01/Proyecto_TutorBot_Garcia_Lester_-_Pajarito_Lucas.git" target="_blank" rel="noreferrer" class="project-link">
-                                    Explorar repositorio en GitHub <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
-                                </a>
-                            </div>
-                        </div>
-                    </article>
-
-                    <!-- PROYECTO 6: CONTROL DE INVENTARIO -->
-                    <article class="project-card reveal tilt-card" data-project-category="web-bots backend-cli">
-                        <div class="project-image">
-                            <img src="./img/inventario.png" alt="Vista del sistema de inventario para tienda" loading="lazy">
-                            <span class="project-badge">Control Comercial</span>
-                        </div>
-                        <div class="project-body">
-                            <div>
-                                <span class="project-type">Inventario · Software de Tienda</span>
-                                <h3>Sistema de Control de Inventario</h3>
-                                <p>
-                                    Programa elaborado para la administración de inventario comercial de una tienda, permitiendo controlar existencias, precios, entradas y salidas de mercadería con precisión.
-                                </p>
-                                <ul class="project-highlights">
-                                    <li><i class="fa-solid fa-check" aria-hidden="true"></i> Gestión rápida de catálogo de productos y existencias.</li>
-                                    <li><i class="fa-solid fa-check" aria-hidden="true"></i> Prevención de quiebres de stock mediante reportes claros.</li>
-                                </ul>
-                            </div>
-                            <div>
-                                <div class="project-tech-list">
-                                    <span>Python / Lógica</span>
-                                    <span>CRUD</span>
-                                    <span>Estructuras de Datos</span>
-                                    <span>Inventario</span>
-                                </div>
-                                <a href="https://github.com/lucaspajarito01/inventario_tienda.git" target="_blank" rel="noreferrer" class="project-link">
-                                    Explorar repositorio en GitHub <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
-                                </a>
-                            </div>
-                        </div>
-                    </article>
-
-                </div>
-
-                <!-- Laboratorio Técnico Interactivo: PostgreSQL + XML + JSONB -->
-                <div class="data-lab-showcase reveal">
-                    <div class="data-lab-info">
-                        <span class="section-kicker"><i class="fa-solid fa-database" aria-hidden="true"></i> Laboratorio de Base de Datos en este Repositorio</span>
-                        <h3>Integración Relacional con PostgreSQL, XML y JSONB</h3>
-                        <p>
-                            Demostración práctica de transformación de catálogos en <code>JSON</code> y registros en <code>XML</code> hacia tablas relacionales en <strong>PostgreSQL</strong> utilizando <code>XMLTABLE</code>, <code>jsonb_array_elements</code> y consultas de agregación con <code>LEFT JOIN</code>.
-                        </p>
-                        <div class="project-tech-list">
-                            <span>PostgreSQL</span>
-                            <span>XMLTABLE</span>
-                            <span>JSONB</span>
-                            <span>Consultas Avanzadas</span>
-                        </div>
-                    </div>
-
-                    <div class="data-lab-viewer">
-                        <div class="lab-tabs" role="tablist" aria-label="Archivos del laboratorio de datos">
-                            <button type="button" class="lab-tab is-active" data-lab-tab="sql" role="tab" aria-selected="true">
-                                <i class="fa-solid fa-terminal" aria-hidden="true"></i> review.sql
-                            </button>
-                            <button type="button" class="lab-tab" data-lab-tab="json" role="tab" aria-selected="false">
-                                <i class="fa-solid fa-code" aria-hidden="true"></i> categorias.json
-                            </button>
-                            <button type="button" class="lab-tab" data-lab-tab="xml" role="tab" aria-selected="false">
-                                <i class="fa-solid fa-file-code" aria-hidden="true"></i> juegos.xml
-                            </button>
-                        </div>
-
-                        <div class="lab-code-panel is-active" data-lab-panel="sql">
-<pre><code>-- Importación y cruce de JSONB y XML en PostgreSQL
-INSERT INTO categorias (codigo, nombre, descripcion)
-SELECT
-    (elem-&gt;&gt;'codigo')::CHAR(3) AS codigo,
-    (elem-&gt;&gt;'nombre')::VARCHAR(100) AS nombre,
-    (elem-&gt;&gt;'descripcion')::VARCHAR(250) AS descripcion
-FROM temporal_json,
-LATERAL jsonb_array_elements(data) AS elem;
-
-SELECT c.nombre AS categoria, COUNT(j.categoria_id) AS total_juegos
-FROM categorias c
-LEFT JOIN juegos j ON c.categoria_id = j.categoria_id
-GROUP BY c.categoria_id, c.nombre;</code></pre>
-                        </div>
-
-                        <div class="lab-code-panel" data-lab-panel="json">
-<pre><code>[
-  {"codigo": "RPG", "nombre": "Juegos de Rol", "descripcion": "Aventuras inmersivas..."},
-  {"codigo": "EST", "nombre": "Estrategia", "descripcion": "Pensamiento táctico..."},
-  {"codigo": "ACC", "nombre": "Acción", "descripcion": "Combate en tiempo real..."},
-  {"codigo": "DEP", "nombre": "Deportes", "descripcion": "Simulaciones deportivas..."}
-]</code></pre>
-                        </div>
-
-                        <div class="lab-code-panel" data-lab-panel="xml">
-<pre><code>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
-&lt;juegos&gt;
-  &lt;juego&gt;
-    &lt;codigo&gt;TW3&lt;/codigo&gt;
-    &lt;titulo&gt;The Witcher 3: Wild Hunt&lt;/titulo&gt;
-    &lt;precio&gt;39.99&lt;/precio&gt;
-    &lt;categoria_id&gt;1&lt;/categoria_id&gt;
-  &lt;/juego&gt;
-&lt;/juegos&gt;</code></pre>
-                        </div>
-                    </div>
-                </div>
-
+                <div class="process-timeline-nodes" id="process-timeline-nodes"></div>
             </div>
         </section>
 
-        <!-- =====================================================================
-             6. DEBAJO DE TODO: APARTADO DE CONTACTOS AGRADABLE A LA VISTA
-             ===================================================================== -->
-        <section id="contacto" class="contact section">
-            <div class="container">
-                <div class="contact-box reveal">
+        <!-- ESCENA 6: CONTACTO (Luz fría en expansión + CTA gigante con botón magnético) -->
+        <section id="scene-contact" class="cinema-scene scene-contact" aria-label="Contacto">
+            <div class="scene-inner contact-stage">
+                <p class="micro-tag">06 // HORIZONTE DE CONTACTO</p>
+                <h2 class="contact-giant-cta" data-split>Construyamos algo juntos</h2>
 
-                    <div class="contact-grid-layout">
-                        <!-- Columna Izquierda: Datos Directos, Canales y Referencias -->
-                        <div class="contact-info-col">
-                            <span class="section-kicker">05 · Contacto Directo</span>
-                            <h2>¿Hablamos sobre tu próximo proyecto o vacante?</h2>
-
-                            <p>
-                                Estoy disponible en <strong>Ciudad de Guatemala (Zona 6)</strong> y en modalidad remota para oportunidades como Desarrollador Web / Backend Junior, proyectos freelance y colaboraciones técnicas.
-                            </p>
-
-                            <div class="contact-cards-list">
-                                <div class="contact-item-card">
-                                    <span class="contact-item-icon whatsapp-bg"><i class="fa-brands fa-whatsapp" aria-hidden="true"></i></span>
-                                    <div class="contact-item-text">
-                                        <small>Teléfono &amp; WhatsApp</small>
-                                        <a href="https://wa.me/50241234463" target="_blank" rel="noreferrer">(+502) 4123-4463</a>
-                                    </div>
-                                    <button type="button" class="mini-copy-btn" data-copy-value="+50241234463" aria-label="Copiar número de teléfono">
-                                        <i class="fa-regular fa-copy" aria-hidden="true"></i>
-                                        <span class="copy-btn-label">Copiar</span>
-                                    </button>
-                                </div>
-
-                                <div class="contact-item-card">
-                                    <span class="contact-item-icon email-bg"><i class="fa-solid fa-envelope" aria-hidden="true"></i></span>
-                                    <div class="contact-item-text">
-                                        <small>Correo Electrónico</small>
-                                        <a href="mailto:lucaspajarito2023@gmail.com">lucaspajarito2023@gmail.com</a>
-                                    </div>
-                                    <button type="button" class="mini-copy-btn" data-copy-value="lucaspajarito2023@gmail.com" aria-label="Copiar correo electrónico">
-                                        <i class="fa-regular fa-copy" aria-hidden="true"></i>
-                                        <span class="copy-btn-label">Copiar</span>
-                                    </button>
-                                </div>
-
-                                <div class="contact-item-card">
-                                    <span class="contact-item-icon discord-bg"><i class="fa-brands fa-discord" aria-hidden="true"></i></span>
-                                    <div class="contact-item-text">
-                                        <small>Discord &amp; GitHub</small>
-                                        <span>lucaspajarito01</span>
-                                    </div>
-                                    <button type="button" class="mini-copy-btn" data-copy-value="lucaspajarito01" aria-label="Copiar usuario de Discord">
-                                        <i class="fa-regular fa-copy" aria-hidden="true"></i>
-                                        <span class="copy-btn-label">Copiar</span>
-                                    </button>
-                                </div>
-                            </div>
-
-                            <!-- Referencias Personales del CV -->
-                            <div class="references-box">
-                                <h4><i class="fa-solid fa-user-check" aria-hidden="true"></i> Referencias Personales</h4>
-                                <div class="references-grid">
-                                    <div>
-                                        <strong>Víctor Emilio Gómez Mendoza</strong>
-                                        <span>Tel: (+502) 5211-7839</span>
-                                    </div>
-                                    <div>
-                                        <strong>Mario Juárez Escobar</strong>
-                                        <span>Tel: (+502) 5793-6219</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Columna Derecha: Formulario Interactivo con envío por Correo o WhatsApp -->
-                        <form class="contact-form" id="quick-contact-form" aria-label="Formulario de contacto">
-                            <h3><i class="fa-regular fa-paper-plane" aria-hidden="true"></i> Envíame un mensaje directo</h3>
-                            <p class="form-subtitle">Completa los campos y elige si prefieres enviarlo por correo electrónico o por WhatsApp.</p>
-
-                            <div class="form-field">
-                                <label for="sender-name">Tu nombre o empresa</label>
-                                <input type="text" id="sender-name" name="name" placeholder="Ej. Ana Morales / Tech Solutions" required />
-                            </div>
-
-                            <div class="form-field">
-                                <label for="sender-subject">Asunto</label>
-                                <select id="sender-subject" name="subject">
-                                    <option value="Oportunidad Laboral / Desarrollador">Oportunidad Laboral / Desarrollador</option>
-                                    <option value="Proyecto de Desarrollo Web / Backend">Proyecto de Desarrollo Web / Backend</option>
-                                    <option value="Automatización / Base de Datos SQL">Automatización / Base de Datos SQL</option>
-                                    <option value="Consulta General">Consulta General</option>
-                                </select>
-                            </div>
-
-                            <div class="form-field">
-                                <label for="sender-message">Mensaje</label>
-                                <textarea id="sender-message" name="message" rows="4" placeholder="Hola Lucas, revisé tu portafolio y tu CV, me gustaría conversar contigo sobre..." required></textarea>
-                            </div>
-
-                            <div class="form-buttons-group">
-                                <button type="submit" class="btn primary form-submit-btn">
-                                    <i class="fa-solid fa-envelope" aria-hidden="true"></i>
-                                    <span>Enviar por Correo</span>
-                                </button>
-                                <button type="button" id="send-whatsapp-btn" class="btn whatsapp-btn">
-                                    <i class="fa-brands fa-whatsapp" aria-hidden="true"></i>
-                                    <span>Enviar por WhatsApp</span>
-                                </button>
-                            </div>
-                            <p class="form-feedback" id="form-feedback" aria-live="polite"></p>
-                        </form>
-                    </div>
-
+                <div class="magnetic-cta-wrapper">
+                    <a href="mailto:lucaspajarito2023@gmail.com?subject=Proyecto%20%2F%20Oportunidad%20—%20Portafolio%203D" class="magnetic-btn" data-cursor="link">
+                        <span class="magnetic-btn-inner">
+                            <span>Iniciar conversación</span>
+                            <span class="btn-arrow" aria-hidden="true">↗</span>
+                        </span>
+                    </a>
                 </div>
+
+                <div class="contact-socials-list" id="contact-socials-list" aria-label="Plataformas y enlaces directos"></div>
+
+                <footer class="minimal-footer">
+                    <span>© 2026 LUCAS SAMUEL PAJARITO SUREK</span>
+                    <span>ESCRIBE "DEV" PARA VER EL STACK TÉCNICO</span>
+                </footer>
             </div>
         </section>
 
     </main>
 
-    <!-- ===== FOOTER ===== -->
-    <footer class="footer">
-        <div class="container footer-inner">
-            <p>© <span id="current-year">2026</span> <strong>Lucas Samuel Pajarito Surek</strong> <span class="footer-separator">·</span> Técnico en Desarrollo de Software · Zona 6, Ciudad de Guatemala.</p>
-            <div class="footer-links">
-                <a href="./docs/CV_Lucas_Pajarito_Surek.pdf" target="_blank" rel="noreferrer">Descargar CV</a>
-                <a href="./docs/Perfil_DISC_Lucas_Pajarito.pdf" target="_blank" rel="noreferrer">Informe DISC</a>
-                <a href="#inicio" class="back-to-top" aria-label="Volver arriba">
-                    Subir <i class="fa-solid fa-arrow-up" aria-hidden="true"></i>
-                </a>
+    <!-- ===== EASTER EGG PARA DEVS: CONSOLA TÉCNICA (Tecla "dev" o `) ===== -->
+    <aside class="dev-console-overlay" id="dev-console-overlay" aria-hidden="true" role="dialog" aria-label="Consola técnica del desarrollador">
+        <div class="dev-console-window">
+            <div class="dev-console-bar">
+                <span>TERM // LUCAS_PAJARITO_DEV_INSPECTOR</span>
+                <button type="button" class="dev-close-btn" id="close-dev-console" aria-label="Cerrar consola">[ESC / CERRAR]</button>
+            </div>
+            <div class="dev-console-body">
+                <div class="dev-metrics-row">
+                    <div class="dev-metric">
+                        <small>FRAMERATE</small>
+                        <strong id="dev-fps-val">60 FPS</strong>
+                    </div>
+                    <div class="dev-metric">
+                        <small>CAMERA_Z</small>
+                        <strong id="dev-camz-val">12.00m</strong>
+                    </div>
+                    <div class="dev-metric">
+                        <small>DRAW_CALLS</small>
+                        <strong id="dev-drawcalls-val">18</strong>
+                    </div>
+                    <div class="dev-metric">
+                        <small>PIXEL_RATIO</small>
+                        <strong>MAX 2.0 (ACES)</strong>
+                    </div>
+                </div>
+
+                <div class="dev-stack-breakdown">
+                    <p><span>&gt; DEVELOPER:</span> Lucas Samuel Pajarito Surek (Técnico en Desarrollo de Software)</p>
+                    <p><span>&gt; ENGINE_3D:</span> Three.js WebGL2 · MeshPhysicalMaterial · InstancedMesh (1,350 partículas)</p>
+                    <p><span>&gt; SHADERS_GLSL:</span> Fractal Brownian Motion (FBM) Volumetric Fog · Expanding Light Portal · Chromatic Velocity Post-Pass</p>
+                    <p><span>&gt; CHOREOGRAPHY:</span> GSAP 3.12 + ScrollTrigger + Lenis Smooth Scroll (Single Shared rAF) + SplitType</p>
+                    <p><span>&gt; BACKEND &amp; DATA:</span> Node.js · Express · POO · SOLID · SQL (PostgreSQL / MySQL) · Flutter / Firebase (WCAG AAA)</p>
+                </div>
             </div>
         </div>
-    </footer>
+    </aside>
 
-    <!-- Módulos JavaScript divididos por responsabilidad y función -->
-    <script src="./src/modules/theme.js" defer></script>
-    <script src="./src/modules/navigation.js" defer></script>
-    <script src="./src/modules/animations.js" defer></script>
-    <script src="./src/modules/filters.js" defer></script>
-    <script src="./src/modules/contact.js" defer></script>
-    <script src="./src/main.js" defer></script>
+    <!-- Punto de entrada modular ES6 -->
+    <script type="module" src="./js/main.js"></script>
 </body>
 </html>
