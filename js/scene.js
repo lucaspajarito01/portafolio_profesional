@@ -1,7 +1,7 @@
 /**
  * ============================================================================
- * SCENE.JS — Motor WebGL / Three.js con Paleta Vibrante, Gemas Poliédricas 3D
- * (No cuadradas) y Proyección 3D->2D en tiempo real para los Cuadritos Apuntadores.
+ * SCENE.JS — Motor WebGL / Three.js con Gemas Poliédricas Nítidas (sin destello excesivo)
+ * y Proyección 3D->2D sincronizada una por una con el Cuadrito Apuntador.
  * ============================================================================
  */
 
@@ -12,15 +12,12 @@ import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
 import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
 import { CONFIG } from './config.js';
 
-/**
- * Shader de Postprocesado Cinematográfico Luminoso
- */
 const CinemaPostShader = {
     uniforms: {
         tDiffuse: { value: null },
         uTime: { value: 0 },
         uVelocity: { value: 0 },
-        uVignette: { value: 0.25 }
+        uVignette: { value: 0.22 }
     },
     vertexShader: /* glsl */ `
         varying vec2 vUv;
@@ -44,7 +41,7 @@ const CinemaPostShader = {
             vec2 center = vUv - 0.5;
             float dist = length(center);
 
-            float aberration = clamp(uVelocity * 0.007, 0.0, 0.008) * dist;
+            float aberration = clamp(uVelocity * 0.006, 0.0, 0.007) * dist;
             vec2 offset = normalize(center + 0.0001) * aberration;
 
             float r = texture2D(tDiffuse, vUv + offset).r;
@@ -52,11 +49,10 @@ const CinemaPostShader = {
             float b = texture2D(tDiffuse, vUv - offset).b;
             vec3 color = vec3(r, g, b);
 
-            // Viñeta ligera que mantiene los colores brillantes y vivos
-            float vig = smoothstep(0.95, 0.32, dist * (1.0 + uVignette));
-            color *= mix(0.78, 1.04, vig);
+            float vig = smoothstep(0.95, 0.3, dist * (1.0 + uVignette));
+            color *= mix(0.8, 1.02, vig);
 
-            float grain = (hash(vUv * 1000.0 + fract(uTime)) - 0.5) * 0.016;
+            float grain = (hash(vUv * 1000.0 + fract(uTime)) - 0.5) * 0.014;
             color += grain;
 
             gl_FragColor = vec4(color, 1.0);
@@ -64,16 +60,13 @@ const CinemaPostShader = {
     `
 };
 
-/**
- * Shader de Nubes Volumétricas tipo Aurora FBM (Colores cian, violeta y esmeralda vibrantes)
- */
 const VolumetricFogShader = {
     uniforms: {
         uTime: { value: 0 },
         uColorDeep: { value: new THREE.Color('#1A2968') },
         uColorMist: { value: new THREE.Color('#00E5FF') },
         uColorAccent: { value: new THREE.Color('#A855F7') },
-        uOpacity: { value: 0.52 }
+        uOpacity: { value: 0.48 }
     },
     vertexShader: /* glsl */ `
         varying vec2 vUv;
@@ -127,16 +120,13 @@ const VolumetricFogShader = {
             float radialMask = smoothstep(0.5, 0.1, length(vUv - 0.5));
             float alpha = smoothstep(0.18, 0.76, f) * radialMask * uOpacity;
 
-            vec3 col = mix(uColorDeep, uColorAccent, clamp(q.x * 1.4, 0.0, 1.0));
-            col = mix(col, uColorMist, clamp(f * 1.35, 0.0, 1.0));
+            vec3 col = mix(uColorDeep, uColorAccent, clamp(q.x * 1.35, 0.0, 1.0));
+            col = mix(col, uColorMist, clamp(f * 1.3, 0.0, 1.0));
             gl_FragColor = vec4(col, alpha);
         }
     `
 };
 
-/**
- * Shader de Portal Luminoso para Escena 6 (Contacto)
- */
 const ExpandingLightShader = {
     uniforms: {
         uTime: { value: 0 },
@@ -164,16 +154,16 @@ const ExpandingLightShader = {
             vec2 p = vUv - 0.5;
             float d = length(p);
             float pulse = sin(uTime * 1.8) * 0.03;
-            float radius = mix(0.16, 0.46, uExpansion) + pulse;
+            float radius = mix(0.16, 0.45, uExpansion) + pulse;
 
             float core = smoothstep(radius, 0.0, d);
-            float ring = smoothstep(radius + 0.16, radius - 0.04, d) - smoothstep(radius, radius - 0.09, d);
+            float ring = smoothstep(radius + 0.15, radius - 0.04, d) - smoothstep(radius, radius - 0.09, d);
 
             vec3 col = mix(uColorViolet, uColorHalo, pow(core, 1.2));
             col = mix(col, uColorCore, pow(core, 2.4));
-            col += uColorCore * ring * 0.85;
+            col += uColorCore * ring * 0.75;
 
-            float alpha = clamp(core * 0.88 + ring * 0.5, 0.0, 0.94);
+            float alpha = clamp(core * 0.85 + ring * 0.45, 0.0, 0.92);
             gl_FragColor = vec4(col, alpha);
         }
     `
@@ -223,13 +213,12 @@ export class ExperienceScene {
     init() {
         this.onProgress(15, 'inicializando motor gráfico luminoso…');
 
-        // Escena con fondo Azul Cósmico Vibrante (no negro)
         this.scene = new THREE.Scene();
         this.scene.background = new THREE.Color(CONFIG.palette.night);
-        this.scene.fog = new THREE.FogExp2(CONFIG.palette.night, 0.013);
+        this.scene.fog = new THREE.FogExp2(CONFIG.palette.night, 0.014);
 
         this.camera = new THREE.PerspectiveCamera(
-            55,
+            52,
             window.innerWidth / window.innerHeight,
             0.1,
             190
@@ -245,7 +234,7 @@ export class ExperienceScene {
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-        this.renderer.toneMappingExposure = 1.32;
+        this.renderer.toneMappingExposure = 1.05;
 
         this.onProgress(35, 'encendiendo iluminación multicolor…');
         this.setupLights();
@@ -270,57 +259,54 @@ export class ExperienceScene {
     }
 
     setupLights() {
-        const ambient = new THREE.AmbientLight('#A78BFA', 1.15);
+        const ambient = new THREE.AmbientLight('#A78BFA', 0.95);
         this.scene.add(ambient);
 
-        const dirLight1 = new THREE.DirectionalLight('#00E5FF', 2.8);
+        const dirLight1 = new THREE.DirectionalLight('#00E5FF', 1.8);
         dirLight1.position.set(10, 16, 14);
         this.scene.add(dirLight1);
 
-        const dirLight2 = new THREE.DirectionalLight('#FF4D79', 2.1);
+        const dirLight2 = new THREE.DirectionalLight('#FF4D79', 1.4);
         dirLight2.position.set(-12, -10, -18);
         this.scene.add(dirLight2);
 
-        const dirLight3 = new THREE.DirectionalLight('#00F5A0', 1.8);
+        const dirLight3 = new THREE.DirectionalLight('#00F5A0', 1.3);
         dirLight3.position.set(0, 12, -90);
         this.scene.add(dirLight3);
 
-        this.cameraLight = new THREE.PointLight('#00E5FF', 3.4, 45, 1.4);
+        // Luz puntual controlada para no saturar ni quemar las gemas cercanas
+        this.cameraLight = new THREE.PointLight('#00E5FF', 1.4, 34, 1.8);
         this.scene.add(this.cameraLight);
     }
 
-    /**
-     * ESCENA 1: Cristal Hero Multicolor Vibrante
-     */
     buildHeroScene() {
         this.heroGroup = new THREE.Group();
         this.heroGroup.position.set(0, 0, 0);
 
-        const knotGeo = new THREE.TorusKnotGeometry(1.15, 0.34, 140, 28, 2, 3);
+        const knotGeo = new THREE.TorusKnotGeometry(1.1, 0.32, 140, 28, 2, 3);
         const knotMat = new THREE.MeshPhysicalMaterial({
             color: new THREE.Color('#00E5FF'),
-            emissive: new THREE.Color('#6D28D9'),
-            emissiveIntensity: 0.65,
+            emissive: new THREE.Color('#4C1D95'),
+            emissiveIntensity: 0.45,
             metalness: 0.72,
-            roughness: 0.14,
-            clearcoat: 1.0,
-            clearcoatRoughness: 0.1
+            roughness: 0.16,
+            clearcoat: 1.0
         });
         this.heroCoreMesh = new THREE.Mesh(knotGeo, knotMat);
         this.heroGroup.add(this.heroCoreMesh);
 
-        const crystalGeo = new THREE.IcosahedronGeometry(2.4, 0);
+        const crystalGeo = new THREE.IcosahedronGeometry(2.3, 0);
         const crystalMat = new THREE.MeshPhysicalMaterial({
             color: new THREE.Color('#A78BFA'),
             emissive: new THREE.Color('#00E5FF'),
-            emissiveIntensity: 0.18,
-            metalness: 0.12,
-            roughness: 0.06,
-            transmission: 0.84,
-            thickness: 1.5,
+            emissiveIntensity: 0.12,
+            metalness: 0.15,
+            roughness: 0.08,
+            transmission: 0.82,
+            thickness: 1.4,
             ior: 1.5,
             transparent: true,
-            opacity: 0.9,
+            opacity: 0.88,
             clearcoat: 1.0,
             flatShading: true
         });
@@ -331,17 +317,17 @@ export class ExperienceScene {
         const edgesMat = new THREE.LineBasicMaterial({
             color: new THREE.Color('#00F5A0'),
             transparent: true,
-            opacity: 0.68
+            opacity: 0.65
         });
         this.heroEdges = new THREE.LineSegments(edgesGeo, edgesMat);
-        this.heroEdges.scale.setScalar(1.04);
+        this.heroEdges.scale.setScalar(1.03);
         this.heroGroup.add(this.heroEdges);
 
-        const ringGeo = new THREE.TorusGeometry(3.25, 0.025, 16, 100);
+        const ringGeo = new THREE.TorusGeometry(3.15, 0.022, 16, 100);
         const ringMat = new THREE.MeshBasicMaterial({
             color: new THREE.Color('#00E5FF'),
             transparent: true,
-            opacity: 0.65
+            opacity: 0.6
         });
         this.heroRing = new THREE.Mesh(ringGeo, ringMat);
         this.heroRing.rotation.x = Math.PI * 0.38;
@@ -351,16 +337,13 @@ export class ExperienceScene {
         this.disposables.push(knotGeo, knotMat, crystalGeo, crystalMat, edgesGeo, edgesMat, ringGeo, ringMat);
     }
 
-    /**
-     * Partículas flotantes multicolores a lo largo del túnel Z
-     */
     buildInstancedParticles() {
-        const count = this.isMobile ? 480 : 1350;
-        const particleGeo = new THREE.OctahedronGeometry(0.075, 0);
+        const count = this.isMobile ? 450 : 1250;
+        const particleGeo = new THREE.OctahedronGeometry(0.065, 0);
         const particleMat = new THREE.MeshBasicMaterial({
             color: new THREE.Color('#ffffff'),
             transparent: true,
-            opacity: 0.8
+            opacity: 0.72
         });
 
         this.particlesMesh = new THREE.InstancedMesh(particleGeo, particleMat, count);
@@ -376,8 +359,8 @@ export class ExperienceScene {
         for (let i = 0; i < count; i++) {
             const x = (Math.random() - 0.5) * 44;
             const y = (Math.random() - 0.5) * 26;
-            const z = 14 - Math.random() * 270;
-            const scale = 0.45 + Math.random() * 1.4;
+            const z = 14 - Math.random() * 295;
+            const scale = 0.4 + Math.random() * 1.25;
 
             dummy.position.set(x, y, z);
             dummy.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, 0);
@@ -395,40 +378,32 @@ export class ExperienceScene {
         this.disposables.push(particleGeo, particleMat);
     }
 
-    /**
-     * Crea un medallón circular luminoso con el icono SVG de la skill para el núcleo de la gema 3D
-     */
     createSkillEmblemTexture(skill) {
         const canvas = document.createElement('canvas');
         canvas.width = 256;
         canvas.height = 256;
         const ctx = canvas.getContext('2d');
 
-        // Halo radial circular del color de la skill
-        const grad = ctx.createRadialGradient(128, 128, 12, 128, 128, 122);
-        grad.addColorStop(0, skill.color);
-        grad.addColorStop(0.55, 'rgba(21, 31, 66, 0.92)');
+        const grad = ctx.createRadialGradient(128, 128, 10, 128, 128, 120);
+        grad.addColorStop(0, 'rgba(15, 23, 54, 0.95)');
+        grad.addColorStop(0.75, 'rgba(21, 31, 66, 0.9)');
         grad.addColorStop(1, 'rgba(11, 16, 38, 0.0)');
         ctx.fillStyle = grad;
         ctx.beginPath();
-        ctx.arc(128, 128, 122, 0, Math.PI * 2);
+        ctx.arc(128, 128, 120, 0, Math.PI * 2);
         ctx.fill();
 
-        // Anillo circular brillante
         ctx.strokeStyle = skill.color;
         ctx.lineWidth = 6;
         ctx.beginPath();
-        ctx.arc(128, 128, 108, 0, Math.PI * 2);
+        ctx.arc(128, 128, 104, 0, Math.PI * 2);
         ctx.stroke();
 
-        // Icono SVG centrado
         ctx.save();
         ctx.translate(68, 68);
         ctx.scale(5.0, 5.0);
         const path = new Path2D(skill.svgPath);
         ctx.fillStyle = '#FFFFFF';
-        ctx.shadowColor = skill.color;
-        ctx.shadowBlur = 14;
         ctx.fill(path);
         ctx.restore();
 
@@ -439,20 +414,18 @@ export class ExperienceScene {
     }
 
     /**
-     * ESCENA 2: Gemas Poliédricas Orbitales (NO cuadradas) que se mueven dinámicamente en 3D
+     * ESCENA 2: Gemas Poliédricas Nítidas y Proporcionadas (NO gigantes ni saturadas)
      */
     buildSkillsCorridor() {
         this.skillsGroup = new THREE.Group();
 
-        // Geometrías poliédricas (icosaedros, octaedros y anillos orbitales, NADA cuadrado)
-        const gemGeo = new THREE.IcosahedronGeometry(1.18, 0);
-        const gemEdgesGeo = new THREE.EdgesGeometry(gemGeo);
-        const outerCageGeo = new THREE.OctahedronGeometry(1.62, 0);
+        const gemGeo = new THREE.IcosahedronGeometry(0.82, 0);
+        const outerCageGeo = new THREE.OctahedronGeometry(1.12, 0);
         const outerCageEdges = new THREE.EdgesGeometry(outerCageGeo);
-        const orbitRingGeo = new THREE.TorusGeometry(1.85, 0.025, 16, 72);
-        const discGeo = new THREE.CircleGeometry(0.82, 32);
+        const orbitRingGeo = new THREE.TorusGeometry(1.32, 0.018, 16, 72);
+        const discGeo = new THREE.CircleGeometry(0.58, 32);
 
-        this.disposables.push(gemGeo, gemEdgesGeo, outerCageGeo, outerCageEdges, orbitRingGeo, discGeo);
+        this.disposables.push(gemGeo, outerCageGeo, outerCageEdges, orbitRingGeo, discGeo);
 
         CONFIG.skills.forEach((skill, idx) => {
             const nodeGroup = new THREE.Group();
@@ -470,35 +443,35 @@ export class ExperienceScene {
             const emblemMesh = new THREE.Mesh(discGeo, emblemMat);
             nodeGroup.add(emblemMesh);
 
-            // 2. Gema Icosaédrica translúcida con el color vibrante de la skill
+            // 2. Gema Icosaédrica translúcida con brillo controlado
             const gemMat = new THREE.MeshPhysicalMaterial({
                 color: skillColor,
                 emissive: skillColor,
-                emissiveIntensity: 0.35,
-                metalness: 0.2,
-                roughness: 0.1,
-                transmission: 0.72,
+                emissiveIntensity: 0.18,
+                metalness: 0.25,
+                roughness: 0.15,
+                transmission: 0.65,
                 transparent: true,
-                opacity: 0.58,
+                opacity: 0.45,
                 flatShading: true
             });
             const gemMesh = new THREE.Mesh(gemGeo, gemMat);
             nodeGroup.add(gemMesh);
 
-            // 3. Aristas facetadas brillantes
+            // 3. Aristas facetadas nítidas
             const wireMat = new THREE.LineBasicMaterial({
                 color: skillColor,
                 transparent: true,
-                opacity: 0.85
+                opacity: 0.9
             });
             const wireShell = new THREE.LineSegments(outerCageEdges, wireMat);
             nodeGroup.add(wireShell);
 
-            // 4. Dos anillos giroscópicos orbitales alrededor de la gema
+            // 4. Dos anillos giroscópicos orbitales
             const ringMat = new THREE.MeshBasicMaterial({
                 color: skillColor,
                 transparent: true,
-                opacity: 0.65
+                opacity: 0.72
             });
             const orbitRing1 = new THREE.Mesh(orbitRingGeo, ringMat);
             orbitRing1.rotation.x = Math.PI * 0.35;
@@ -531,9 +504,6 @@ export class ExperienceScene {
         this.scene.add(this.skillsGroup);
     }
 
-    /**
-     * ESCENA 3: Paisaje de Montañas Luminosas + Aurora Volumétrica FBM
-     */
     buildFogLandscape() {
         this.landscapeGroup = new THREE.Group();
 
@@ -569,21 +539,21 @@ export class ExperienceScene {
         });
 
         const terrainMesh = new THREE.Mesh(terrainGeo, terrainMat);
-        terrainMesh.position.set(0, -4.6, -116);
+        terrainMesh.position.set(0, -4.6, -150);
         this.landscapeGroup.add(terrainMesh);
 
         const terrainWireMat = new THREE.MeshBasicMaterial({
             color: new THREE.Color('#00E5FF'),
             wireframe: true,
             transparent: true,
-            opacity: 0.35
+            opacity: 0.32
         });
         const terrainWire = new THREE.Mesh(terrainGeo, terrainWireMat);
-        terrainWire.position.set(0, -4.57, -116);
+        terrainWire.position.set(0, -4.57, -150);
         this.landscapeGroup.add(terrainWire);
 
         const fogPlaneGeo = new THREE.PlaneGeometry(34, 18);
-        [-104, -114, -124, -132].forEach((zPos, i) => {
+        [-138, -148, -158, -166].forEach((zPos, i) => {
             const fogMat = new THREE.ShaderMaterial({
                 uniforms: THREE.UniformsUtils.clone(VolumetricFogShader.uniforms),
                 vertexShader: VolumetricFogShader.vertexShader,
@@ -591,7 +561,7 @@ export class ExperienceScene {
                 transparent: true,
                 depthWrite: false
             });
-            fogMat.uniforms.uOpacity.value = 0.42 + (i % 2) * 0.1;
+            fogMat.uniforms.uOpacity.value = 0.4 + (i % 2) * 0.1;
 
             const fogMesh = new THREE.Mesh(fogPlaneGeo, fogMat);
             fogMesh.position.set((i % 2 === 0 ? -1 : 1) * 2.2, -1.0 + i * 0.4, zPos);
@@ -604,20 +574,17 @@ export class ExperienceScene {
         this.disposables.push(terrainGeo, terrainMat, terrainWireMat, fogPlaneGeo);
     }
 
-    /**
-     * ESCENA 4: Portales hexagonales luminosos detrás de los Proyectos
-     */
     buildProjectsBackdrop() {
         this.projectsGroup = new THREE.Group();
         const frameGeo = new THREE.RingGeometry(6.2, 6.28, 6);
         const colors = ['#FF4D79', '#00E5FF', '#00F5A0'];
 
-        [-144, -156, -168].forEach((zPos, idx) => {
+        [-176, -188, -200].forEach((zPos, idx) => {
             const frameMat = new THREE.MeshBasicMaterial({
                 color: new THREE.Color(colors[idx % colors.length]),
                 side: THREE.DoubleSide,
                 transparent: true,
-                opacity: 0.42
+                opacity: 0.4
             });
             const frame = new THREE.Mesh(frameGeo, frameMat);
             frame.position.set(0, 0, zPos);
@@ -630,34 +597,31 @@ export class ExperienceScene {
         this.disposables.push(frameGeo);
     }
 
-    /**
-     * ESCENA 5: Tubo de Energía 3D con Nodos Multicolores para el Proceso
-     */
     buildProcessTimeline() {
         this.processGroup = new THREE.Group();
 
         const curvePoints = [
-            new THREE.Vector3(0, -0.4, -174),
-            new THREE.Vector3(-2.4, 0.7, -182),
-            new THREE.Vector3(2.4, -0.5, -192),
-            new THREE.Vector3(-2.2, 0.6, -202),
-            new THREE.Vector3(2.0, -0.4, -212),
-            new THREE.Vector3(0, 0, -222)
+            new THREE.Vector3(0, -0.4, -206),
+            new THREE.Vector3(-2.4, 0.7, -212),
+            new THREE.Vector3(2.4, -0.5, -222),
+            new THREE.Vector3(-2.2, 0.6, -232),
+            new THREE.Vector3(2.0, -0.4, -240),
+            new THREE.Vector3(0, 0, -248)
         ];
 
         const curve = new THREE.CatmullRomCurve3(curvePoints);
-        const tubeGeo = new THREE.TubeGeometry(curve, 100, 0.09, 12, false);
+        const tubeGeo = new THREE.TubeGeometry(curve, 100, 0.08, 12, false);
         const tubeMat = new THREE.MeshBasicMaterial({
             color: new THREE.Color('#00E5FF'),
             transparent: true,
-            opacity: 0.6
+            opacity: 0.55
         });
 
         this.processTube = new THREE.Mesh(tubeGeo, tubeMat);
         this.processGroup.add(this.processTube);
 
-        const nodeGeo = new THREE.OctahedronGeometry(0.48, 1);
-        const ringGeo = new THREE.TorusGeometry(0.78, 0.03, 12, 48);
+        const nodeGeo = new THREE.OctahedronGeometry(0.44, 1);
+        const ringGeo = new THREE.TorusGeometry(0.72, 0.025, 12, 48);
 
         CONFIG.processSteps.forEach((step) => {
             const stepGroup = new THREE.Group();
@@ -671,7 +635,7 @@ export class ExperienceScene {
             const ringMat = new THREE.MeshBasicMaterial({
                 color: stepColor,
                 transparent: true,
-                opacity: 0.75
+                opacity: 0.7
             });
             const ringMesh = new THREE.Mesh(ringGeo, ringMat);
 
@@ -691,9 +655,6 @@ export class ExperienceScene {
         this.disposables.push(tubeGeo, tubeMat, nodeGeo, ringGeo);
     }
 
-    /**
-     * ESCENA 6: Portal de Luz Vibrante en Expansión
-     */
     buildContactPortal() {
         const portalGeo = new THREE.PlaneGeometry(36, 36);
         this.portalMat = new THREE.ShaderMaterial({
@@ -705,7 +666,7 @@ export class ExperienceScene {
         });
 
         this.portalMesh = new THREE.Mesh(portalGeo, this.portalMat);
-        this.portalMesh.position.set(0, 0, -252);
+        this.portalMesh.position.set(0, 0, -280);
         this.scene.add(this.portalMesh);
 
         this.disposables.push(portalGeo, this.portalMat);
@@ -721,11 +682,12 @@ export class ExperienceScene {
         const renderPass = new RenderPass(this.scene, this.camera);
         this.composer.addPass(renderPass);
 
+        // Bloom suave y controlado para que nunca queme las gemas cercanas
         this.bloomPass = new UnrealBloomPass(
             new THREE.Vector2(window.innerWidth, window.innerHeight),
-            0.48,
-            0.65,
-            0.65
+            0.22,
+            0.5,
+            0.84
         );
         this.composer.addPass(this.bloomPass);
 
@@ -778,10 +740,6 @@ export class ExperienceScene {
         window.addEventListener('resize', this._onResize, { passive: true });
     }
 
-    /**
-     * Render frame: actualiza movimiento 3D y proyecta coordenadas 2D de cada Gema de Skill
-     * para que el cuadrito apuntador en el DOM apunte exactamente a la gema en tiempo real.
-     */
     update() {
         const elapsed = this.clock.getElapsedTime();
 
@@ -793,30 +751,28 @@ export class ExperienceScene {
             this._lastFpsUpdate = now;
         }
 
-        const lerpFactor = this.isPaused ? 0.25 : 0.08;
+        const lerpFactor = this.isPaused ? 0.25 : 0.085;
         this.mouse.x = THREE.MathUtils.lerp(this.mouse.x, this.mouse.targetX, 0.06);
         this.mouse.y = THREE.MathUtils.lerp(this.mouse.y, this.mouse.targetY, 0.06);
         this.cameraCurrentZ = THREE.MathUtils.lerp(this.cameraCurrentZ, this.cameraTargetZ, lerpFactor);
 
-        const parallaxX = this.isPaused ? 0 : this.mouse.x * 0.85;
-        const parallaxY = this.isPaused ? 0 : this.mouse.y * 0.55;
+        const parallaxX = this.isPaused ? 0 : this.mouse.x * 0.65;
+        const parallaxY = this.isPaused ? 0 : this.mouse.y * 0.45;
 
         this.camera.position.set(parallaxX, parallaxY, this.cameraCurrentZ);
-        this.camera.lookAt(parallaxX * 0.35, parallaxY * 0.35, this.cameraCurrentZ - 14);
+        this.camera.lookAt(parallaxX * 0.3, parallaxY * 0.3, this.cameraCurrentZ - 14);
         this.camera.updateMatrixWorld();
-        this.cameraLight.position.set(parallaxX * 2, parallaxY * 2 + 1, this.cameraCurrentZ - 4);
+        this.cameraLight.position.set(parallaxX * 1.5, parallaxY * 1.5 + 1, this.cameraCurrentZ - 4);
 
         const projectedSkills = [];
         const width = window.innerWidth;
         const height = window.innerHeight;
 
-        // Actualizar Gemas de Skills y calcular proyección 3D -> 2D para el cuadrito apuntador
         this.skillNodes.forEach((node, index) => {
             if (!this.isPaused) {
-                // Movimiento orbital vivo en 3D (no estático)
-                const orbitAngle = elapsed * 0.85 + index * 0.9;
-                node.group.position.x = node.basePos.x + Math.cos(orbitAngle) * 0.42;
-                node.group.position.y = node.basePos.y + Math.sin(orbitAngle * 1.2) * 0.36;
+                const orbitAngle = elapsed * 0.8 + index * 0.9;
+                node.group.position.x = node.basePos.x + Math.cos(orbitAngle) * 0.26;
+                node.group.position.y = node.basePos.y + Math.sin(orbitAngle * 1.15) * 0.24;
 
                 node.gem.rotation.y = elapsed * 0.55 + index;
                 node.gem.rotation.x = elapsed * 0.32;
@@ -826,29 +782,33 @@ export class ExperienceScene {
                 node.ring2.rotation.x = -elapsed * 0.75 + index;
             }
 
-            // Distancia en Z desde el punto focal frente a la cámara (camZ - 9)
-            const focalZ = this.cameraCurrentZ - 9.5;
-            const distZ = Math.abs(focalZ - node.group.position.z);
-            const isAheadOfCamera = node.group.position.z < this.cameraCurrentZ - 1.8;
-            const proximity = isAheadOfCamera ? THREE.MathUtils.clamp(1 - distZ / 10.5, 0, 1) : 0;
+            // Distancia de la gema respecto a la cámara
+            const distFromCam = this.cameraCurrentZ - node.group.position.z;
+            // Punto focal ideal a 10.5m delante de la cámara
+            const distFromFocal = Math.abs(distFromCam - 10.5);
+            const isInOptimalWindow = distFromCam > 5.2 && distFromCam < 17.5;
+            const proximity = isInOptimalWindow ? THREE.MathUtils.clamp(1 - distFromFocal / 6.5, 0, 1) : 0;
 
-            node.material.emissiveIntensity = THREE.MathUtils.lerp(0.28, 1.45, proximity);
-            const targetScale = 0.85 + proximity * 0.42;
-            node.group.scale.setScalar(THREE.MathUtils.lerp(node.group.scale.x, targetScale, 0.12));
+            // Atenuar tamaño cuando la gema está demasiado cerca de la lente (< 5.5m) para que nunca tape la pantalla
+            const nearFade = THREE.MathUtils.smoothstep(distFromCam, 2.5, 6.2);
+            const targetScale = (0.78 + proximity * 0.28) * nearFade;
+            node.group.scale.setScalar(THREE.MathUtils.lerp(node.group.scale.x, Math.max(0.001, targetScale), 0.15));
+            node.group.visible = nearFade > 0.02;
 
-            // Proyectar centro de la gema 3D a píxeles de pantalla 2D
+            node.material.emissiveIntensity = THREE.MathUtils.lerp(0.14, 0.45, proximity);
+
             node.group.getWorldPosition(this._projVec);
             this._projVec.project(this.camera);
 
             const screenX = (this._projVec.x * 0.5 + 0.5) * width;
             const screenY = (-(this._projVec.y * 0.5) + 0.5) * height;
             const inFrustum =
-                isAheadOfCamera &&
+                isInOptimalWindow &&
                 this._projVec.z < 1.0 &&
-                screenX > -80 &&
-                screenX < width + 80 &&
-                screenY > -80 &&
-                screenY < height + 80;
+                screenX > 40 &&
+                screenX < width - 40 &&
+                screenY > 70 &&
+                screenY < height - 70;
 
             projectedSkills.push({
                 id: node.data.id,
@@ -857,12 +817,12 @@ export class ExperienceScene {
                 screenX,
                 screenY,
                 proximity,
-                distZ,
-                visible: inFrustum && proximity > 0.08
+                distFromFocal,
+                visible: inFrustum && proximity > 0.15
             });
         });
 
-        this.onSkillScreenPositions(projectedSkills);
+        this.onSkillScreenPositions(projectedSkills, this.cameraCurrentZ);
 
         if (!this.isPaused) {
             if (this.heroGroup) {

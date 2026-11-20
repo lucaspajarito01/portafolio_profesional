@@ -1,15 +1,12 @@
 /**
  * ============================================================================
- * SECTIONS.JS — Cuadritos Apuntadores Dinámicos 3D->2D para Skills,
+ * SECTIONS.JS — Cuadrito Apuntador Único Sin Colisiones (3D->2D),
  * Tarjetas Compactas de Proyectos con Imagen Relacionada y Parte 5 Reestructurada.
  * ============================================================================
  */
 
 import { CONFIG } from './config.js';
 
-/**
- * SVG de respaldo temático colorido en caso de que el navegador esté sin internet
- */
 function buildFallbackDataUri(visualType, accentColor) {
     const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200">
         <defs>
@@ -25,13 +22,6 @@ function buildFallbackDataUri(visualType, accentColor) {
     return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
 }
 
-/**
- * Renderiza dinámicamente:
- * 1. Los Cuadritos Apuntadores de Skills (conectados en tiempo real a las gemas 3D)
- * 2. Las Tarjetas Compactas de Proyectos con Imagen Relacionada y Enlaces
- * 3. La Parte 5 (Proceso) Reestructurada como un Pipeline Conectado
- * 4. Los Enlaces de Contacto en Escena 6
- */
 export function renderDynamicSections() {
     // 1. Capa de Cuadritos Apuntadores Dinámicos para Skills (Escena 2)
     const pointersLayer = document.querySelector('#skills-pointers-layer');
@@ -176,68 +166,73 @@ export function renderDynamicSections() {
 }
 
 /**
- * Posiciona dinámicamente cada Cuadrito Apuntador (Callout Box) en la pantalla
- * apuntando directamente a la posición 2D proyectada de su Gema 3D conforme avanza el scroll.
+ * Muestra ÚNICAMENTE el cuadrito apuntador de la gema 3D más cercana en foco,
+ * y solo cuando la cámara ya salió del Hero y está dentro del corredor de Skills.
+ * Esto evita que dos cuadritos se encimen o choquen con los textos del Hero.
  */
-export function updateSkillCalloutsPosition(projectedSkills, currentSceneIndex) {
+export function updateSkillCalloutsPosition(projectedSkills, currentSceneIndex, cameraZ = 12) {
     const counterBadge = document.querySelector('#skills-active-counter');
     const isMobile = window.innerWidth <= 768;
 
-    // Verificar si estamos dentro del rango de la escena de Skills
-    let activeCount = 0;
-    let closestSkill = null;
-    let maxProximity = 0;
+    // Solo permitir cuadritos apuntadores dentro del corredor Z de Skills (-14.5m a -126m)
+    const inSkillsCorridor = cameraZ < -14.5 && cameraZ > -126;
+
+    // Encontrar únicamente la gema activa con mayor proximidad al punto focal
+    let activeHeroGem = null;
+    let bestProximity = 0;
+
+    if (inSkillsCorridor) {
+        projectedSkills.forEach((item) => {
+            if (item.visible && item.proximity > bestProximity) {
+                bestProximity = item.proximity;
+                activeHeroGem = item;
+            }
+        });
+    }
 
     projectedSkills.forEach((item) => {
         const containerEl = document.querySelector(`#skill-pointer-${item.id}`);
-        const reticleEl = document.querySelector(`#reticle-${item.id}`);
-        if (!containerEl || !reticleEl) return;
+        if (!containerEl) return;
 
-        if (item.proximity > maxProximity) {
-            maxProximity = item.proximity;
-            closestSkill = item;
-        }
+        const isTheSingleActiveGem = activeHeroGem && activeHeroGem.id === item.id && bestProximity > 0.22;
 
-        // Mostrar el cuadrito cuando la cámara se acerca a la gema en el scroll
-        const shouldShow = item.visible && item.proximity > 0.14;
-
-        if (!shouldShow) {
+        if (!isTheSingleActiveGem) {
             containerEl.classList.remove('is-active');
             containerEl.style.opacity = '0';
             containerEl.style.pointerEvents = 'none';
             return;
         }
 
-        activeCount++;
         containerEl.classList.add('is-active');
-        const alpha = Math.min(1, item.proximity * 1.45);
+        const alpha = Math.min(1, (item.proximity - 0.15) * 1.65);
         containerEl.style.opacity = alpha.toFixed(2);
-        containerEl.style.pointerEvents = item.proximity > 0.45 ? 'auto' : 'none';
+        containerEl.style.pointerEvents = 'auto';
 
-        // Posicionar punto de mira exactamente sobre la gema 3D
-        const gemX = Math.max(40, Math.min(window.innerWidth - 40, item.screenX));
-        const gemY = Math.max(80, Math.min(window.innerHeight - 80, item.screenY));
+        // Restringir coordenadas a una zona central segura lejos de la barra superior y del encabezado
+        const minY = 230;
+        const maxY = Math.max(260, window.innerHeight - 140);
+        const safeX = Math.max(90, Math.min(window.innerWidth - 90, item.screenX));
+        const safeY = Math.max(minY, Math.min(maxY, item.screenY));
 
-        containerEl.style.setProperty('--gem-x', `${gemX.toFixed(1)}px`);
-        containerEl.style.setProperty('--gem-y', `${gemY.toFixed(1)}px`);
-        containerEl.style.setProperty('--callout-scale', (0.88 + item.proximity * 0.14).toFixed(3));
+        containerEl.style.setProperty('--gem-x', `${safeX.toFixed(1)}px`);
+        containerEl.style.setProperty('--gem-y', `${safeY.toFixed(1)}px`);
+        containerEl.style.setProperty('--callout-scale', (0.92 + item.proximity * 0.08).toFixed(3));
 
-        // Determinar si el cuadrito se ubica a la izquierda o derecha apuntando hacia la gema
-        const isLeftGem = item.screenX < window.innerWidth * 0.5;
-        containerEl.classList.toggle('points-from-right', !isLeftGem && !isMobile);
+        // Si la gema está en la mitad izquierda, el cuadrito se despliega a su derecha apuntando hacia la gema
+        const isLeftGem = item.data.side === 'left' || safeX < window.innerWidth * 0.5;
         containerEl.classList.toggle('points-from-left', isLeftGem && !isMobile);
+        containerEl.classList.toggle('points-from-right', !isLeftGem && !isMobile);
     });
 
-    if (counterBadge && closestSkill && maxProximity > 0.14) {
-        counterBadge.textContent = `NODO 0${closestSkill.index + 1} / 0${CONFIG.skills.length} · ${closestSkill.data.name.toUpperCase()}`;
-    } else if (counterBadge && currentSceneIndex === 2) {
-        counterBadge.textContent = 'AVANZA CON EL SCROLL PARA APUNTAR A CADA SKILL';
+    if (counterBadge) {
+        if (activeHeroGem && bestProximity > 0.22) {
+            counterBadge.textContent = `NODO 0${activeHeroGem.index + 1} / 0${CONFIG.skills.length} · ${activeHeroGem.data.name.toUpperCase()}`;
+        } else {
+            counterBadge.textContent = 'DESPLAZA EL SCROLL PARA APUNTAR A CADA GEMA 3D';
+        }
     }
 }
 
-/**
- * Configura las animaciones con SplitType + GSAP ScrollTrigger
- */
 export function setupScrollAnimations(gsap, ScrollTrigger, SplitType, onSceneEnter) {
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -262,30 +257,46 @@ export function setupScrollAnimations(gsap, ScrollTrigger, SplitType, onSceneEnt
 
     const heroBackTitle = document.querySelector('.hero-title-back');
     const heroFrontTitle = document.querySelector('.hero-title-front');
+    const heroCaptionBox = document.querySelector('.hero-caption-box');
 
     if (heroBackTitle && heroFrontTitle && !prefersReducedMotion) {
         gsap.to(heroBackTitle, {
-            yPercent: -30,
-            scale: 0.95,
-            opacity: 0.18,
-            ease: 'none',
-            scrollTrigger: {
-                trigger: '#scene-hero',
-                start: 'top top',
-                end: 'bottom top',
-                scrub: true
-            }
-        });
-
-        gsap.to(heroFrontTitle, {
-            yPercent: -48,
-            scale: 1.05,
+            yPercent: -35,
+            scale: 0.94,
             opacity: 0,
             ease: 'none',
             scrollTrigger: {
                 trigger: '#scene-hero',
                 start: 'top top',
-                end: 'bottom top',
+                end: '75% top',
+                scrub: true
+            }
+        });
+
+        gsap.to(heroFrontTitle, {
+            yPercent: -50,
+            scale: 1.04,
+            opacity: 0,
+            ease: 'none',
+            scrollTrigger: {
+                trigger: '#scene-hero',
+                start: 'top top',
+                end: '75% top',
+                scrub: true
+            }
+        });
+    }
+
+    // Desvanecer rápidamente el subtítulo del Hero al iniciar el scroll para que nunca choque con Skills
+    if (heroCaptionBox && !prefersReducedMotion) {
+        gsap.to(heroCaptionBox, {
+            y: -45,
+            opacity: 0,
+            ease: 'none',
+            scrollTrigger: {
+                trigger: '#scene-hero',
+                start: '10% top',
+                end: '55% top',
                 scrub: true
             }
         });
@@ -322,9 +333,6 @@ export function setupScrollAnimations(gsap, ScrollTrigger, SplitType, onSceneEnt
     });
 }
 
-/**
- * Interacción 3D Tilt en las tarjetas compactas de Proyectos
- */
 export function setupProjectCardsInteraction() {
     const cards = document.querySelectorAll('.project-glass-card');
     const grid = document.querySelector('#projects-glass-grid');
@@ -362,9 +370,6 @@ export function setupProjectCardsInteraction() {
     });
 }
 
-/**
- * Botón Magnético en Escena 6
- */
 export function setupMagneticButtons(gsap) {
     const magneticButtons = document.querySelectorAll('.magnetic-btn');
 

@@ -105,8 +105,8 @@ class ImmersivePortfolioApp {
         if (ExperienceScene.isWebGLAvailable() && canvas) {
             this.scene3D = new ExperienceScene(canvas, {
                 onProgress: (pct, msg) => updateLoaderUI(pct, msg),
-                onSkillScreenPositions: (projectedSkills) => {
-                    updateSkillCalloutsPosition(projectedSkills, this.currentSceneIndex);
+                onSkillScreenPositions: (projectedSkills, cameraZ) => {
+                    updateSkillCalloutsPosition(projectedSkills, this.currentSceneIndex, cameraZ);
                 }
             });
         } else {
