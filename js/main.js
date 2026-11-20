@@ -2,7 +2,7 @@
  * ============================================================================
  * MAIN.JS — Orquestador Principal
  * Sincroniza Lenis + GSAP ScrollTrigger + Three.js en un único requestAnimationFrame,
- * controla el Loader Terminal, Cursor con Inercia, Botón Pausar Movimiento y Easter Egg DEV.
+ * y enlaza la proyección 3D->2D de las gemas de Skills con sus cuadritos apuntadores.
  * ============================================================================
  */
 
@@ -11,11 +11,10 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Lenis from 'lenis';
 import SplitType from 'split-type';
 
-import { CONFIG } from './config.js';
 import { ExperienceScene } from './scene.js';
 import {
     renderDynamicSections,
-    updateActiveSkillBeacon,
+    updateSkillCalloutsPosition,
     setupScrollAnimations,
     setupProjectCardsInteraction,
     setupMagneticButtons
@@ -27,9 +26,9 @@ class ImmersivePortfolioApp {
     constructor() {
         this.scene3D = null;
         this.lenis = null;
+        this.currentSceneIndex = 1;
         this.isMotionPaused = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-        // Estado del cursor personalizado con inercia
         this.cursor = {
             dot: document.querySelector('#cursor-dot'),
             ring: document.querySelector('#cursor-ring'),
@@ -39,7 +38,6 @@ class ImmersivePortfolioApp {
             ringY: window.innerHeight / 2
         };
 
-        // Buffer de teclas para el Easter Egg "dev"
         this.keyBuffer = '';
         this.devConsoleOpen = false;
 
@@ -47,28 +45,20 @@ class ImmersivePortfolioApp {
     }
 
     init() {
-        // 1. Renderizar contenido dinámico desde CONFIG
         renderDynamicSections();
-
-        // 2. Inicializar Loader y Escena 3D WebGL (con fallback si no hay WebGL)
         this.setupLoaderAndWebGL();
-
-        // 3. Inicializar Smooth Scroll con Lenis sincronizado con ScrollTrigger
         this.setupSmoothScroll();
 
-        // 4. Configurar animaciones de texto (SplitType + GSAP), tarjetas 3D y botón magnético
         setupScrollAnimations(gsap, ScrollTrigger, SplitType, (sceneNumber) => {
+            this.currentSceneIndex = sceneNumber;
             this.updateActiveSceneIndicator(sceneNumber);
         });
         setupProjectCardsInteraction();
         setupMagneticButtons(gsap);
 
-        // 5. Configurar Cursor, Controles HUD (Pausar movimiento / Tema) y Easter Egg "dev"
         this.setupCustomCursor();
         this.setupHudControls();
         this.setupDevEasterEgg();
-
-        // 6. Iniciar el único bucle compartido requestAnimationFrame
         this.startSharedRafLoop();
     }
 
@@ -89,7 +79,7 @@ class ImmersivePortfolioApp {
                 { val: displayedProgress },
                 {
                     val: targetPct,
-                    duration: 0.45,
+                    duration: 0.4,
                     ease: 'power2.out',
                     onUpdate: function () {
                         displayedProgress = Math.round(this.targets()[0].val);
@@ -105,7 +95,7 @@ class ImmersivePortfolioApp {
                             setTimeout(() => {
                                 loaderEl.classList.add('is-complete');
                                 loaderEl.setAttribute('aria-hidden', 'true');
-                            }, 360);
+                            }, 320);
                         }
                     }
                 }
@@ -115,10 +105,11 @@ class ImmersivePortfolioApp {
         if (ExperienceScene.isWebGLAvailable() && canvas) {
             this.scene3D = new ExperienceScene(canvas, {
                 onProgress: (pct, msg) => updateLoaderUI(pct, msg),
-                onActiveSkillChange: (skill) => updateActiveSkillBeacon(skill)
+                onSkillScreenPositions: (projectedSkills) => {
+                    updateSkillCalloutsPosition(projectedSkills, this.currentSceneIndex);
+                }
             });
         } else {
-            // Fallback estático elegante si el dispositivo no soporta WebGL
             document.documentElement.classList.add('no-webgl');
             updateLoaderUI(100, 'modo fallback activado · sin WebGL');
         }
@@ -126,7 +117,7 @@ class ImmersivePortfolioApp {
 
     setupSmoothScroll() {
         this.lenis = new Lenis({
-            duration: 1.25,
+            duration: 1.2,
             easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
             smoothWheel: !this.isMotionPaused,
             wheelMultiplier: 0.95,
@@ -156,14 +147,13 @@ class ImmersivePortfolioApp {
             }
         });
 
-        // Navegación suave al hacer clic en anclas
         document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
             anchor.addEventListener('click', (event) => {
                 const targetId = anchor.getAttribute('href');
                 const targetEl = targetId ? document.querySelector(targetId) : null;
                 if (targetEl && this.lenis) {
                     event.preventDefault();
-                    this.lenis.scrollTo(targetEl, { offset: 0, duration: 1.4 });
+                    this.lenis.scrollTo(targetEl, { offset: 0, duration: 1.3 });
                 }
             });
         });
@@ -199,26 +189,21 @@ class ImmersivePortfolioApp {
             { passive: true }
         );
 
-        const bindHoverTargets = () => {
-            const interactives = document.querySelectorAll('a, button, [data-cursor]');
-            interactives.forEach((el) => {
-                el.addEventListener('mouseenter', () => {
-                    const cursorType = el.getAttribute('data-cursor') || 'link';
-                    this.cursor.ring.classList.add('is-expanded');
-                    this.cursor.ring.setAttribute('data-state', cursorType);
-                });
-                el.addEventListener('mouseleave', () => {
-                    this.cursor.ring.classList.remove('is-expanded');
-                    this.cursor.ring.removeAttribute('data-state');
-                });
+        const interactives = document.querySelectorAll('a, button, [data-cursor]');
+        interactives.forEach((el) => {
+            el.addEventListener('mouseenter', () => {
+                const cursorType = el.getAttribute('data-cursor') || 'link';
+                this.cursor.ring.classList.add('is-expanded');
+                this.cursor.ring.setAttribute('data-state', cursorType);
             });
-        };
-
-        bindHoverTargets();
+            el.addEventListener('mouseleave', () => {
+                this.cursor.ring.classList.remove('is-expanded');
+                this.cursor.ring.removeAttribute('data-state');
+            });
+        });
     }
 
     setupHudControls() {
-        // 1. Botón "Pausar movimiento"
         const pauseBtn = document.querySelector('#pause-motion-btn');
         const pauseLabel = document.querySelector('#pause-motion-label');
 
@@ -244,7 +229,6 @@ class ImmersivePortfolioApp {
             });
         }
 
-        // 2. Selector Modo Frío Oscuro / Modo Niebla Claro
         const themeBtn = document.querySelector('#theme-mode-btn');
         const themeLabel = document.querySelector('#theme-mode-label');
 
@@ -255,7 +239,7 @@ class ImmersivePortfolioApp {
                 document.documentElement.setAttribute('data-theme', nextTheme);
 
                 if (themeLabel) {
-                    themeLabel.textContent = nextTheme === 'light' ? 'Modo Hielo' : 'Modo Noche';
+                    themeLabel.textContent = nextTheme === 'light' ? 'Modo Claro' : 'Modo Cósmico';
                 }
                 if (this.scene3D) {
                     this.scene3D.setThemePalette(nextTheme === 'light');
@@ -264,10 +248,6 @@ class ImmersivePortfolioApp {
         }
     }
 
-    /**
-     * Easter Egg para Desarrolladores:
-     * Al escribir "dev" en el teclado o presionar "`" o el botón [DEV], despliega la consola técnica.
-     */
     setupDevEasterEgg() {
         const consoleOverlay = document.querySelector('#dev-console-overlay');
         const closeBtn = document.querySelector('#close-dev-console');
@@ -311,9 +291,6 @@ class ImmersivePortfolioApp {
         }
     }
 
-    /**
-     * Único bucle requestAnimationFrame compartido para Lenis, Three.js, Cursor y telemetría DEV
-     */
     startSharedRafLoop() {
         const devFpsEl = document.querySelector('#dev-fps-val');
         const devCamZEl = document.querySelector('#dev-camz-val');
@@ -336,7 +313,6 @@ class ImmersivePortfolioApp {
                 }
             }
 
-            // Actualizar posición del cursor con inercia
             if (this.cursor.dot && this.cursor.ring) {
                 this.cursor.ringX += (this.cursor.x - this.cursor.ringX) * 0.16;
                 this.cursor.ringY += (this.cursor.y - this.cursor.ringY) * 0.16;
