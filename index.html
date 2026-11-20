@@ -96,27 +96,7 @@
                 <span>[DEV]</span>
             </button>
         </div>
-    </header>
-
-    <!-- ===== BARRA DE PROGRESO LATERAL E INDICADOR DE CÁMARA ===== -->
-    <aside class="hud-lateral" aria-label="Progreso del recorrido 3D">
-        <div class="hud-scene-counter">
-            <span id="hud-scene-number">01</span>
-            <span class="counter-divider">/</span>
-            <span>06</span>
-        </div>
-
-        <div class="lateral-track">
-            <div class="lateral-fill" id="lateral-progress-fill"></div>
-            <div class="lateral-dots">
-                <a href="#scene-hero" data-scene-dot="1" class="is-active" aria-label="Escena 1: Hero"></a>
-                <a href="#scene-skills" data-scene-dot="2" aria-label="Escena 2: Skills"></a>
-                <a href="#scene-fog" data-scene-dot="3" aria-label="Escena 3: Paisaje de niebla"></a>
-                <a href="#scene-projects" data-scene-dot="4" aria-label="Escena 4: Proyectos"></a>
-                <a href="#scene-process" data-scene-dot="5" aria-label="Escena 5: Proceso"></a>
-                <a href="#scene-contact" data-scene-dot="6" aria-label="Escena 6: Contacto"></a>
-            </div>
-        </div>
+    </header>     
 
         <div class="hud-telemetry" id="hud-camera-z" aria-hidden="true">Z: 12.0m</div>
     </aside>
@@ -139,7 +119,6 @@
                 </h1>
 
                 <div class="hero-caption-box">
-                    <p class="micro-tag">01 // LUCAS SAMUEL PAJARITO SUREK</p>
                     <p class="hero-subtitle" data-split>Desarrollador Web · Experiencias Interactivas</p>
                     <div class="scroll-cue" aria-hidden="true">
                         <span class="scroll-cue-line"></span>
@@ -153,15 +132,8 @@
         <section id="scene-skills" class="cinema-scene scene-skills" aria-label="Habilidades de programación">
             <div class="scene-inner skills-stage">
                 <div class="skills-header-overlay">
-                    <p class="micro-tag">02 // TRAVESÍA DE SKILLS</p>
+                    <p class="micro-tag"></p> SKILLS</p>
                     <h2 class="scene-headline" data-split>Arquitectura y dominio técnico.</h2>
-                </div>
-
-                <!-- Baliza reactiva que muestra el cristal 3D más cercano a la cámara -->
-                <div class="active-skill-beacon" id="active-skill-beacon" aria-live="polite">
-                    <span class="beacon-kicker">NODO ACTIVO EN CÁMARA</span>
-                    <strong class="beacon-title" id="active-skill-name">HTML5 Semántico</strong>
-                    <span class="beacon-sub" id="active-skill-category">Estructura &amp; Accesibilidad WCAG AAA</span>
                 </div>
 
                 <!-- Índice inferior de cristales -->
@@ -172,18 +144,16 @@
         <!-- ESCENA 3: PAISAJE DE NIEBLA (Montañas en parallax + Shader FBM volumétrico) -->
         <section id="scene-fog" class="cinema-scene scene-fog" aria-label="Visión creativa">
             <div class="scene-inner fog-stage">
-                <p class="micro-tag">03 // TRANSICIÓN VOLUMÉTRICA</p>
                 <h2 class="fog-cinematic-phrase">Del diseño al código.</h2>
                 <p class="fog-micro-sub">Precisión visual · Rendimiento a 60 FPS · Código limpio</p>
             </div>
         </section>
 
-        <!-- ESCENA 4: PROYECTOS (Tarjetas Glassmorphism flotando en 3D con tilt y desenfoque) -->
+        <!-- ESCENA 4:  (Tarjetas Glassmorphism flotando en 3D con tilt y desenfoque) -->
         <section id="scene-projects" class="cinema-scene scene-projects" aria-label="Proyectos destacados">
             <div class="scene-inner projects-stage">
                 <div class="section-minimal-header">
-                    <p class="micro-tag">04 // SISTEMAS &amp; ARQUITECTURA</p>
-                    <h2 class="scene-headline" data-split>Proyectos de ingeniería real.</h2>
+                    <h2 class="scene-headline" data-split>Aplicaciones</h2>
                 </div>
 
                 <!-- Contenedor poblado dinámicamente desde /js/config.js -->

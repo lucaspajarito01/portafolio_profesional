@@ -5,7 +5,7 @@ Experiencia web interactiva 3D en una sola página donde **el scroll actúa como
 ---
 
 ## Estructura del Proyecto
-
+02 // 
 ```text
 ├── index.html          # Estructura semántica de las 6 escenas, HUD, Loader y Import Map
 ├── css/
