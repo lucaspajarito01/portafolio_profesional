@@ -30,14 +30,13 @@ export const CONFIG = {
         accentGold: '#FBBF24'
     },
 
-    // Waypoints de cámara sincronizados con las 6 escenas
+    // Waypoints de cámara sincronizados con las 5 escenas
     cameraWaypoints: {
         hero: { zStart: 12, zEnd: -12 },
         skills: { zStart: -12, zEnd: -132 },
         fogLandscape: { zStart: -132, zEnd: -168 },
         projects: { zStart: -168, zEnd: -205 },
-        process: { zStart: -205, zEnd: -242 },
-        contact: { zStart: -242, zEnd: -275 }
+        contact: { zStart: -205, zEnd: -275 }
     },
 
     // Escena 2: 8 Gemas 3D separadas cada 13 unidades en Z para que aparezcan UNA POR UNA sin encimarse
@@ -172,58 +171,6 @@ export const CONFIG = {
             demoUrl: 'https://github.com/lucaspajarito01/gym_system.git',
             codeUrl: 'https://github.com/lucaspajarito01/gym_system.git',
             visualType: 'gym'
-        }
-    ],
-
-    // Escena 5 (Reestructurada): Pipeline Interactivo de Proceso de Ingeniería
-    processSteps: [
-        {
-            step: '01',
-            label: 'Idea & Arquitectura',
-            shortLabel: 'Idea estratégica',
-            description: 'Análisis de requerimientos, modelado de datos relacionales y definición de arquitectura limpia aplicando principios SOLID.',
-            deliverables: ['Requerimientos', 'Esquema SQL', 'Arquitectura'],
-            color: '#00E5FF',
-            iconPath: 'M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7zm-3 18h6v2H9v-2z',
-            z: -212,
-            x: -2.4,
-            y: 0.7
-        },
-        {
-            step: '02',
-            label: 'Diseño UI & Experiencia',
-            shortLabel: 'Diseño preciso',
-            description: 'Prototipado de interfaces modernas, responsivas y accesibles (WCAG AAA) con micro-interacciones y jerarquía visual clara.',
-            deliverables: ['UI Responsiva', 'WCAG AAA', 'Prototipo 3D'],
-            color: '#A855F7',
-            iconPath: 'M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9c.83 0 1.5-.67 1.5-1.5 0-.39-.15-.74-.39-1.01-.23-.26-.38-.61-.38-.99 0-.83.67-1.5 1.5-1.5H16c2.76 0 5-2.24 5-5 0-4.42-4.03-8-9-8zm-5.5 9c-.83 0-1.5-.67-1.5-1.5S5.67 9 6.5 9 8 9.67 8 10.5 7.33 12 6.5 12zm3-4C8.67 8 8 7.33 8 6.5S8.67 5 9.5 5s1.5.67 1.5 1.5S10.33 8 9.5 8zm5 0c-.83 0-1.5-.67-1.5-1.5S13.67 5 14.5 5s1.5.67 1.5 1.5S15.33 8 14.5 8zm3 4c-.83 0-1.5-.67-1.5-1.5S16.67 9 17.5 9s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z',
-            z: -222,
-            x: 2.4,
-            y: -0.5
-        },
-        {
-            step: '03',
-            label: 'Código Modular & APIs',
-            shortLabel: 'Código limpio',
-            description: 'Implementación frontend y backend con JavaScript ES6+, Node.js, Express, POO e integración de bases de datos y herramientas de IA.',
-            deliverables: ['Node.js & ES6+', 'POO & SOLID', 'Integración SQL'],
-            color: '#00F5A0',
-            iconPath: 'M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z',
-            z: -232,
-            x: -2.2,
-            y: 0.6
-        },
-        {
-            step: '04',
-            label: 'Pruebas & Despliegue',
-            shortLabel: 'Despliegue global',
-            description: 'Optimización a 60 FPS, control de versiones colaborativo en Git/GitHub bajo metodología Scrum y puesta en producción.',
-            deliverables: ['60 FPS Ready', 'Git & GitHub', 'Producción'],
-            color: '#FF4D79',
-            iconPath: 'M12 2.5s4.5 2.04 4.5 10.5c0 2.49-1.04 5.57-1.6 7H9.1c-.56-1.43-1.6-4.51-1.6-7C7.5 4.54 12 2.5 12 2.5zm2 8.5a2 2 0 1 0-4 0 2 2 0 0 0 4 0zm-6.31 9.52c-.48-1.23-1.12-3.47-1.19-5.52L4 17v5l3.69-1.48zm8.62 0L20 22v-5l-2.5-2c-.07 2.05-.71 4.29-1.19 5.52z',
-            z: -240,
-            x: 2.0,
-            y: -0.4
         }
     ],
 

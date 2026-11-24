@@ -188,7 +188,6 @@ export class ExperienceScene {
         this.clock = new THREE.Clock();
         this.disposables = [];
         this.skillNodes = [];
-        this.processNodes = [];
         this.fogPlanes = [];
         this.fps = 60;
         this._frameCount = 0;
@@ -246,10 +245,9 @@ export class ExperienceScene {
         this.onProgress(70, 'generando gemas poliédricas de skills…');
         this.buildSkillsCorridor();
 
-        this.onProgress(85, 'renderizando aurora FBM y circuito 3D…');
+        this.onProgress(85, 'renderizando aurora FBM y portal 3D…');
         this.buildFogLandscape();
         this.buildProjectsBackdrop();
-        this.buildProcessTimeline();
         this.buildContactPortal();
 
         this.setupPostProcessing();
@@ -597,64 +595,6 @@ export class ExperienceScene {
         this.disposables.push(frameGeo);
     }
 
-    buildProcessTimeline() {
-        this.processGroup = new THREE.Group();
-
-        const curvePoints = [
-            new THREE.Vector3(0, -0.4, -206),
-            new THREE.Vector3(-2.4, 0.7, -212),
-            new THREE.Vector3(2.4, -0.5, -222),
-            new THREE.Vector3(-2.2, 0.6, -232),
-            new THREE.Vector3(2.0, -0.4, -240),
-            new THREE.Vector3(0, 0, -248)
-        ];
-
-        const curve = new THREE.CatmullRomCurve3(curvePoints);
-        const tubeGeo = new THREE.TubeGeometry(curve, 100, 0.08, 12, false);
-        const tubeMat = new THREE.MeshBasicMaterial({
-            color: new THREE.Color('#00E5FF'),
-            transparent: true,
-            opacity: 0.55
-        });
-
-        this.processTube = new THREE.Mesh(tubeGeo, tubeMat);
-        this.processGroup.add(this.processTube);
-
-        const nodeGeo = new THREE.OctahedronGeometry(0.44, 1);
-        const ringGeo = new THREE.TorusGeometry(0.72, 0.025, 12, 48);
-
-        CONFIG.processSteps.forEach((step) => {
-            const stepGroup = new THREE.Group();
-            stepGroup.position.set(step.x, step.y, step.z);
-
-            const stepColor = new THREE.Color(step.color);
-
-            const nodeMat = new THREE.MeshBasicMaterial({ color: stepColor });
-            const nodeMesh = new THREE.Mesh(nodeGeo, nodeMat);
-
-            const ringMat = new THREE.MeshBasicMaterial({
-                color: stepColor,
-                transparent: true,
-                opacity: 0.7
-            });
-            const ringMesh = new THREE.Mesh(ringGeo, ringMat);
-
-            stepGroup.add(nodeMesh, ringMesh);
-            this.processGroup.add(stepGroup);
-
-            this.processNodes.push({
-                data: step,
-                group: stepGroup,
-                ring: ringMesh
-            });
-
-            this.disposables.push(nodeMat, ringMat);
-        });
-
-        this.scene.add(this.processGroup);
-        this.disposables.push(tubeGeo, tubeMat, nodeGeo, ringGeo);
-    }
-
     buildContactPortal() {
         const portalGeo = new THREE.PlaneGeometry(36, 36);
         this.portalMat = new THREE.ShaderMaterial({
@@ -836,11 +776,6 @@ export class ExperienceScene {
 
             this.fogPlanes.forEach((fogMat) => {
                 fogMat.uniforms.uTime.value = elapsed;
-            });
-
-            this.processNodes.forEach((pNode, idx) => {
-                pNode.group.rotation.y = elapsed * 0.6 + idx;
-                pNode.ring.rotation.z = -elapsed * 0.8;
             });
 
             if (this.portalMat) {

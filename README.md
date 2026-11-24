@@ -7,12 +7,12 @@ Experiencia web interactiva 3D en una sola página donde **el scroll actúa como
 ## Estructura del Proyecto
 02 // 
 ```text
-├── index.html          # Estructura semántica de las 6 escenas, HUD, Loader y Import Map
+├── index.html          # Estructura semántica de las 5 escenas, HUD, Loader y Import Map
 ├── css/
 │   └── style.css       # Variables de paleta fría, tipografía editorial, glassmorphism y responsive
 ├── js/
-│   ├── config.js       # Datos centralizados: perfil, skills, proyectos, proceso y enlaces
-│   ├── scene.js        # Escena única Three.js (6 ambientes en eje Z, Shaders FBM y Postprocesado)
+│   ├── config.js       # Datos centralizados: perfil, skills, proyectos y enlaces
+│   ├── scene.js        # Escena única Three.js (5 ambientes en eje Z, Shaders FBM y Postprocesado)
 │   ├── sections.js     # Renderizado DOM, SplitType + GSAP, tarjetas 3D con tilt y botón magnético
 │   └── main.js         # Bucle único requestAnimationFrame compartido, Lenis, cursor y Easter Egg DEV
 └── README.md
@@ -48,7 +48,6 @@ Luego abre `http://localhost:8080` (o el puerto asignado) en tu navegador.
    - `CONFIG.developer`: Cambia el nombre, rol, correo y teléfono.
    - `CONFIG.skills`: Edita los 8 cristales 3D del corredor (`name`, `category`, coordenadas `pos` y `svgPath`).
    - `CONFIG.projects`: Agrega o edita las tarjetas de proyectos (`title`, `subtitle`, `description`, `technologies`, `demoUrl`, `codeUrl`).
-   - `CONFIG.processSteps`: Modifica los 4 nodos del tubo de luz 3D (`Idea`, `Diseño`, `Código`, `Despliegue`).
    - `CONFIG.socials`: Actualiza enlaces a GitHub, LinkedIn, WhatsApp, Instagram y Email.
 
 2. **Colores y Tipografía (`/css/style.css` y `/js/config.js`)**:

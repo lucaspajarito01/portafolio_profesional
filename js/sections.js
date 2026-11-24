@@ -1,7 +1,7 @@
 /**
  * ============================================================================
- * SECTIONS.JS — Cuadrito Apuntador Único Sin Colisiones (3D->2D),
- * Tarjetas Compactas de Proyectos con Imagen Relacionada y Parte 5 Reestructurada.
+ * SECTIONS.JS — Cuadrito Apuntador Único Sin Colisiones (3D->2D)
+ * y Tarjetas Compactas de Proyectos con Imagen Relacionada.
  * ============================================================================
  */
 
@@ -117,39 +117,7 @@ export function renderDynamicSections() {
             .join('');
     }
 
-    // 3. Parte 5 Reestructurada: Pipeline Conectado de Proceso (Escena 5)
-    const processNodesEl = document.querySelector('#process-timeline-nodes');
-    if (processNodesEl) {
-        processNodesEl.innerHTML = CONFIG.processSteps
-            .map(
-                (item, idx) => `
-                <article class="process-pipeline-card" style="--step-color: ${item.color};">
-                    <div class="pipeline-connector-bar" aria-hidden="true">
-                        <span class="pipeline-dot"></span>
-                        ${idx < CONFIG.processSteps.length - 1 ? '<span class="pipeline-line"></span>' : ''}
-                    </div>
-                    <div class="pipeline-card-body">
-                        <div class="pipeline-top-row">
-                            <div class="pipeline-icon-box">
-                                <svg viewBox="0 0 24 24" aria-hidden="true">
-                                    <path d="${item.iconPath}" fill="currentColor" />
-                                </svg>
-                            </div>
-                            <span class="pipeline-step-badge">FASE ${item.step}</span>
-                        </div>
-                        <h3 class="pipeline-title">${item.label}</h3>
-                        <p class="pipeline-desc">${item.description}</p>
-                        <div class="pipeline-tags">
-                            ${item.deliverables.map((d) => `<span>${d}</span>`).join('')}
-                        </div>
-                    </div>
-                </article>
-            `
-            )
-            .join('');
-    }
-
-    // 4. Enlaces de Contacto (Escena 6)
+    // 3. Enlaces de Contacto (Escena 5)
     const socialsEl = document.querySelector('#contact-socials-list');
     if (socialsEl) {
         socialsEl.innerHTML = CONFIG.socials
@@ -172,6 +140,7 @@ export function renderDynamicSections() {
  */
 export function updateSkillCalloutsPosition(projectedSkills, currentSceneIndex, cameraZ = 12) {
     const counterBadge = document.querySelector('#skills-active-counter');
+    const skillsHeader = document.querySelector('.skills-sticky-header');
     const isMobile = window.innerWidth <= 768;
 
     // Solo permitir cuadritos apuntadores dentro del corredor Z de Skills (-14.5m a -126m)
@@ -208,15 +177,19 @@ export function updateSkillCalloutsPosition(projectedSkills, currentSceneIndex, 
         containerEl.style.opacity = alpha.toFixed(2);
         containerEl.style.pointerEvents = 'auto';
 
-        // Restringir coordenadas a una zona central segura lejos de la barra superior y del encabezado
-        const minY = 230;
+        // Mantener el recuadro debajo del banner sticky, incluso cuando se divide en varias líneas.
+        const scale = 0.92 + item.proximity * 0.08;
+        const calloutHeight = containerEl.querySelector('.skill-callout-box').offsetHeight * scale;
+        const headerBottom = skillsHeader.getBoundingClientRect().bottom;
+        const calloutTopOffset = isMobile ? 52 * scale : -calloutHeight / 2;
+        const minY = Math.max(230, headerBottom + 16 - calloutTopOffset);
         const maxY = Math.max(260, window.innerHeight - 140);
         const safeX = Math.max(90, Math.min(window.innerWidth - 90, item.screenX));
         const safeY = Math.max(minY, Math.min(maxY, item.screenY));
 
         containerEl.style.setProperty('--gem-x', `${safeX.toFixed(1)}px`);
         containerEl.style.setProperty('--gem-y', `${safeY.toFixed(1)}px`);
-        containerEl.style.setProperty('--callout-scale', (0.92 + item.proximity * 0.08).toFixed(3));
+        containerEl.style.setProperty('--callout-scale', scale.toFixed(3));
 
         // Si la gema está en la mitad izquierda, el cuadrito se despliega a su derecha apuntando hacia la gema
         const isLeftGem = item.data.side === 'left' || safeX < window.innerWidth * 0.5;
